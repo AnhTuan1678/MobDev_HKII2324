@@ -3,7 +3,7 @@ package com.example.affirmations.data
 import com.example.affirmations.R
 import com.example.affirmations.model.Affirmation
 
-object DataSouce{
+data object DataSource{
     val affirmations = listOf<Affirmation>(
         Affirmation(R.string.architecture, R.drawable.architecture),
         Affirmation(R.string.automotive, R.drawable.automotive),
