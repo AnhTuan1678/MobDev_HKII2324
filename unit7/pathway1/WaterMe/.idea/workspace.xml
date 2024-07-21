@@ -9,14 +9,7 @@
     <option name="autoReloadType" value="NONE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="0db636ba-ff74-44d8-8b9d-930df752be21" name="Changes" comment="">
-      <change beforePath="$PROJECT_DIR$/../../../unit4/pathway3/MyCity/.idea/deploymentTargetSelector.xml" beforeDir="false" afterPath="$PROJECT_DIR$/../../../unit4/pathway3/MyCity/.idea/deploymentTargetSelector.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../../../unit4/pathway3/MyCity/app/src/main/java/com/example/mycity/MainActivity.kt" beforeDir="false" afterPath="$PROJECT_DIR$/../../../unit4/pathway3/MyCity/app/src/main/java/com/example/mycity/MainActivity.kt" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../../../unit4/pathway3/MyCity/app/src/main/java/com/example/mycity/ui/CityScreen.kt" beforeDir="false" afterPath="$PROJECT_DIR$/../../../unit4/pathway3/MyCity/app/src/main/java/com/example/mycity/ui/CityScreen.kt" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../../../unit4/pathway3/MyCity/app/src/main/java/com/example/mycity/ui/ElementCart.kt" beforeDir="false" afterPath="$PROJECT_DIR$/../../../unit4/pathway3/MyCity/app/src/main/java/com/example/mycity/ui/ElementCart.kt" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../../../unit4/pathway3/MyCity/app/src/main/java/com/example/mycity/ui/MyCityApp.kt" beforeDir="false" afterPath="$PROJECT_DIR$/../../../unit4/pathway3/MyCity/app/src/main/java/com/example/mycity/ui/MyCityApp.kt" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../../../unit4/pathway3/MyCity/app/src/main/java/com/example/mycity/ui/RecommendedPlace.kt" beforeDir="false" afterPath="$PROJECT_DIR$/../../../unit4/pathway3/MyCity/app/src/main/java/com/example/mycity/ui/RecommendedPlace.kt" afterDir="false" />
-    </list>
+    <list default="true" id="0db636ba-ff74-44d8-8b9d-930df752be21" name="Changes" comment="" />
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
@@ -63,7 +56,7 @@
     "com.google.services.firebase.aqiPopupShown": "true",
     "git-widget-placeholder": "main",
     "kotlin-language-version-configured": "true",
-    "last_opened_file_path": "D:/MobDev_HKII2324/unit7/pathway1/WaterMe",
+    "last_opened_file_path": "D:/MobDev_HKII2324/unit8/pathway1/Juice Tracker",
     "settings.editor.selected.configurable": "preferences.lookFeel"
   },
   "keyToStringList": {
