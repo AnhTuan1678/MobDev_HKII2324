@@ -16,13 +16,15 @@ fun CityScreen(
     modifier: Modifier = Modifier,
     onClick: (CityCategory) -> Unit = {}
 ) {
-    Column {
+    Column(
+        modifier = modifier.padding(8.dp)
+    ) {
         city.forEach() { cityCategory ->
             ItemCard(
                 itemName = cityCategory.name,
                 itemImageRes = cityCategory.image,
                 modifier = Modifier
-                    .padding(16.dp)
+                    .padding(4.dp)
                     .clickable { onClick(cityCategory) }
             )
         }

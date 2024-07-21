@@ -8,7 +8,10 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.adaptive.currentWindowAdaptiveInfo
+import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.tooling.preview.Preview
+import com.example.mycity.ui.CityViewModel
 import com.example.mycity.ui.MyCityApp
 import com.example.mycity.ui.theme.MyCityTheme
 
@@ -19,10 +22,19 @@ class MainActivity : ComponentActivity() {
         setContent {
             MyCityTheme {
                 val windowSize = currentWindowAdaptiveInfo().windowSizeClass
+                val viewModel = CityViewModel()
                 Scaffold(modifier = Modifier.fillMaxSize()) { innerPadding ->
-                    MyCityApp(Modifier.padding(innerPadding))
+                    MyCityApp(Modifier.padding(innerPadding), windowSize, viewModel)
                 }
             }
         }
+    }
+}
+
+@Preview
+@Composable
+fun PreviewMyCityApp() {
+    MyCityTheme {
+        MyCityApp(Modifier.fillMaxSize(), null, CityViewModel())
     }
 }

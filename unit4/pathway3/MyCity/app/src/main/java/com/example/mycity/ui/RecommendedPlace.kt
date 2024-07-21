@@ -16,9 +16,31 @@ import com.example.mycity.data.Coffees
 import com.example.mycity.data.Place
 
 @Composable
-fun RecommendedPlaceScreen(modifier: Modifier) {
-    Text(text = "RecommendedPlaceScreen", style = MaterialTheme.typography.bodyLarge, modifier = Modifier.padding(16.dp))
-    Button(onClick = { /*TODO*/ }) {
-        Text(text = "Click me")
+fun RecommendedPlaceScreen(modifier: Modifier, place: Place) {
+    Column {
+        Image(
+            painter = painterResource(place.image),
+            contentDescription = null,
+            modifier = Modifier
+                .padding(16.dp)
+                .padding(bottom = 8.dp)
+        )
+        Text(
+            text = place.name,
+//            style = MaterialTheme.typography.h5,
+            modifier = Modifier.padding(16.dp)
+        )
+        Text(
+            text = place.description,
+//            style = MaterialTheme.typography.body1,
+            modifier = Modifier.padding(16.dp)
+        )
+        Spacer(modifier = Modifier.weight(1f))
+        Button(
+            onClick = { /*TODO*/ },
+            modifier = Modifier.padding(16.dp)
+        ) {
+            Text(text = "Book a table")
+        }
     }
 }

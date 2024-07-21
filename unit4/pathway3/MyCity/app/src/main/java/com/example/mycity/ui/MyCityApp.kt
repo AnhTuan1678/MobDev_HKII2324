@@ -1,7 +1,8 @@
 package com.example.mycity.ui
 
-import android.util.Log
 import androidx.compose.foundation.layout.padding
+import androidx.compose.material3.CenterAlignedTopAppBar
+import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -13,6 +14,7 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
+import androidx.window.core.layout.WindowSizeClass
 
 enum class Screen {
     City,
@@ -22,7 +24,7 @@ enum class Screen {
 
 @Suppress("NAME_SHADOWING")
 @Composable
-fun MyCityApp(modifier: Modifier, viewModel: CityViewModel) {
+fun MyCityApp(modifier: Modifier, windowSize: WindowSizeClass? = null, viewModel: CityViewModel) {
     // Nav
     val navController = rememberNavController()
     val backStackEntry by navController.currentBackStackEntryAsState()
@@ -32,7 +34,7 @@ fun MyCityApp(modifier: Modifier, viewModel: CityViewModel) {
     val uiState by viewModel.uiState.collectAsState()
     Scaffold(
         topBar = {
-            Text(text = "MyCity")
+            AppBar(modifier = Modifier)
         }
     ) { innerPadding ->
         val modifier = Modifier.padding(innerPadding)
@@ -51,7 +53,6 @@ fun MyCityApp(modifier: Modifier, viewModel: CityViewModel) {
                 )
             }
             composable(Screen.Category.name) {
-                Log.d("MyCityApp", "ui state: ${uiState.category}")
                 CategoryScreen(
                     modifier = modifier,
                     onClick = {
@@ -62,14 +63,26 @@ fun MyCityApp(modifier: Modifier, viewModel: CityViewModel) {
                 )
             }
             composable(Screen.RecommendedPlace.name) {
-                RecommendedPlaceScreen(modifier = modifier)
+                RecommendedPlaceScreen(modifier = modifier, place = uiState.place!!)
             }
         }
     }
 }
 
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+fun AppBar(modifier: Modifier, currentScreen: Screen? = null) {
+    CenterAlignedTopAppBar(
+        title = {
+            Text(text = "MyCity")
+        },
+        modifier = modifier
+    )
+}
+
 @Composable
 @Preview(showBackground = true)
 fun MyCityAppPreview() {
-//    MyCityApp(Modifier)
+    val viewModel = CityViewModel()
+    MyCityApp(Modifier, null, viewModel)
 }
