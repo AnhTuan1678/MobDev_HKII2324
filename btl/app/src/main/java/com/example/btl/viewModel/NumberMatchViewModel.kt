@@ -1,8 +1,10 @@
 package com.example.btl.viewModel
 
-import androidx.lifecycle.LiveData
-import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.update
+import kotlin.random.Random
 
 data class NumberState(
     val number: Int,
@@ -11,50 +13,42 @@ data class NumberState(
 )
 
 class NumberMatchViewModel : ViewModel() {
-    // State để lưu trữ danh sách số, tổng mục tiêu, số được chọn, và trạng thái số
-    private val _numbers = MutableLiveData<List<NumberState>>()
-    val numbers: LiveData<List<NumberState>> get() = _numbers
+    // StateFlow để lưu trữ danh sách số
+    private val _numbers = MutableStateFlow<List<NumberState>>(emptyList())
+    val numbers: StateFlow<List<NumberState>> get() = _numbers
 
-    private val _targetSum = MutableLiveData<Int>()
-    val targetSum: LiveData<Int> get() = _targetSum
+    // StateFlow để lưu trữ tổng mục tiêu
+    private val _targetSum = MutableStateFlow<Int>(0)
+    val targetSum: StateFlow<Int> get() = _targetSum
 
-    private val _selected = MutableLiveData<Int?>(null)
-    val selected: LiveData<Int?> get() = _selected
+    // StateFlow để lưu trữ số được chọn
+    private val _selected = MutableStateFlow<Int?>(null)
+    val selected: StateFlow<Int?> get() = _selected
 
     init {
         generateNumbers()
-        _targetSum.value = (5..13).random() // Ví dụ tổng mục tiêu giữa 10 và 20
+        _targetSum.value = (5..13).random() // Ví dụ tổng mục tiêu giữa 5 và 13
     }
 
-    private fun generateNumbers(size: Int = 30, range: IntRange = 1..10) {
-        // Tạo danh sách số ngẫu nhiên
+    private fun generateNumbers(size: Int = 10, range: IntRange = 1..10) {
         val numbers = List(size) { range.random() }
-
-        // Tạo trạng thái cho từng số
         val numberStates = numbers.mapIndexed { index, number ->
-            NumberState(
-                number = number,
-                isMatched = false,
-                position = index
-            )
+            NumberState(number = number, isMatched = false, position = index)
         }
-
-        // Cập nhật giá trị của _numbers
         _numbers.value = numberStates
     }
 
-
     fun selectNumber(index: Int) {
-        val currentSelected = _numbers.value?.get(index) ?: return
-        val sel = _selected.value
+        val currentSelected = _numbers.value.getOrNull(index) ?: return
+        val selected = _selected.value
         if (currentSelected.isMatched) return
 
-        if (sel == null) {
+        if (selected == null) {
             _selected.value = index
         } else {
-            val selectedNumber = _numbers.value?.get(sel) ?: return
+            val selectedNumber = _numbers.value.getOrNull(selected) ?: return
             if (selectedNumber.number + currentSelected.number == _targetSum.value && selectedNumber.position != currentSelected.position) {
-                updateNumberState(sel)
+                updateNumberState(selected)
                 updateNumberState(index)
             }
             _selected.value = null
@@ -62,36 +56,23 @@ class NumberMatchViewModel : ViewModel() {
     }
 
     private fun updateNumberState(index: Int, isMatched: Boolean = true) {
-        // Lấy danh sách hiện tại
-        val currentNumbers = _numbers.value ?: return
+        val currentNumbers = _numbers.value
+        if (index < 0 || index >= currentNumbers.size) return
 
-        // Kiểm tra xem chỉ số có hợp lệ không
-        if (index < 0 || index >= currentNumbers.size) {
-            return
-        }
-
-        // Lấy số hiện tại và cập nhật trạng thái
         val currentNumber = currentNumbers[index]
         val updatedNumber = currentNumber.copy(isMatched = isMatched)
-        val updatedNumbers = currentNumbers.toMutableList().apply {
-            this[index] = updatedNumber
+        _numbers.update { numbers ->
+            numbers.toMutableList().apply { this[index] = updatedNumber }
         }
-
-        // Cập nhật giá trị mới cho _numbers
-        _numbers.value = updatedNumbers
     }
 
     fun isGameFinished(): Boolean {
-        val currentNumbers = _numbers.value ?: return false
-        val targetSum = _targetSum.value ?: return false
+        val currentNumbers = _numbers.value
+        val targetSum = _targetSum.value
 
-        // Kiểm tra điều kiện không còn số nào có thể ghép
         val availableNumbers = currentNumbers.filterNot { it.isMatched }
-        if (availableNumbers.size < 2) {
-            return true
-        }
+        if (availableNumbers.size < 2) return true
 
-        // Kiểm tra nếu không còn cặp số nào có thể tạo ra tổng mục tiêu
         for (i in availableNumbers.indices) {
             for (j in i + 1 until availableNumbers.size) {
                 if (availableNumbers[i].number + availableNumbers[j].number == targetSum) {
@@ -99,8 +80,6 @@ class NumberMatchViewModel : ViewModel() {
                 }
             }
         }
-
-        // Nếu không tìm thấy cặp nào hợp lệ, trò chơi đã kết thúc
         return true
     }
 
