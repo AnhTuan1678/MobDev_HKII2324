@@ -21,6 +21,7 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.systemBarsPadding
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material3.BottomSheetScaffold
 import androidx.compose.material3.BottomSheetScaffoldState
@@ -73,9 +74,11 @@ fun EntryBottomSheet(
                     onUpdateJuice = juiceTrackerViewModel::updateCurrentJuice,
                     onCancel = onCancel,
                     onSubmit = onSubmit,
-                    modifier = Modifier.padding(
-                        horizontal = dimensionResource(R.dimen.padding_medium)
-                    )
+                    modifier = Modifier
+                        .padding(
+                            horizontal = dimensionResource(R.dimen.padding_medium)
+                        )
+                        .systemBarsPadding()
                 )
             }
         }
@@ -123,7 +126,7 @@ fun SheetForm(
         ColorSpinnerRow(
             colorSpinnerPosition = findColorIndex(juice.color),
             onColorChange = { color ->
-                onUpdateJuice(juice.copy(color = JuiceColor.values()[color].name))
+                onUpdateJuice(juice.copy(color = JuiceColor.entries[color].name))
             }
         )
         RatingInputRow(
