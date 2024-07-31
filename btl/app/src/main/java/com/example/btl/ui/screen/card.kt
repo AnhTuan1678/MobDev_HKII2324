@@ -9,18 +9,21 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import com.example.btl.viewModel.NumberState
 
 @Composable
-fun Element(number: Int, modifier: Modifier = Modifier, onClick: () -> Unit = {}) {
-    var isClicked by remember { mutableStateOf(false) } // Theo dõi trạng thái nhấp chuột
+fun Element(
+    numberState: NumberState,
+    modifier: Modifier = Modifier,
+    onClick: () -> Unit = {},
+    isClicked: Boolean = false
+) {
+    if (numberState.isMatched) return
 
     Box(
         modifier = modifier
@@ -30,13 +33,13 @@ fun Element(number: Int, modifier: Modifier = Modifier, onClick: () -> Unit = {}
                 CircleShape
             )
             .clickable {
-                isClicked = !isClicked // Chuyển đổi trạng thái khi nhấp chuột
                 onClick()
-            },
+            }
+            .clip(CircleShape),
         contentAlignment = Alignment.Center
     ) {
         Text(
-            text = number.toString(),
+            text = numberState.number.toString(),
             style = MaterialTheme.typography.titleLarge,
             color = MaterialTheme.colorScheme.onPrimary
         )
@@ -47,6 +50,6 @@ fun Element(number: Int, modifier: Modifier = Modifier, onClick: () -> Unit = {}
 @Composable
 fun CardPreview() {
     Box(modifier = Modifier.fillMaxSize()) {
-        Element(number = 1, modifier = Modifier, onClick = {})
+        Element(numberState = NumberState(5, false, 0), modifier = Modifier, onClick = {})
     }
 }

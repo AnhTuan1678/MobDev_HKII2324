@@ -51,11 +51,11 @@ fun SumPairsScreen(modifier: Modifier = Modifier, onNavigateToMenuClick: () -> U
 
 @Composable
 fun Series(arr: List<Int>) {
-    LazyRow {
-        items(arr.size) { index ->
-            Element(number = arr[index])
-        }
-    }
+//    LazyRow {
+//        items(arr.size) { index ->
+//            Element(numberState = arr[index])
+//        }
+//    }
 }
 
 @Preview(showBackground = true)
