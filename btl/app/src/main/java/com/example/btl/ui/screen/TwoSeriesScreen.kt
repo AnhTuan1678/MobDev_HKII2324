@@ -4,11 +4,9 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Card
-import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
@@ -20,14 +18,12 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
-import com.example.btl.ui.screen.Component.GridNumber
 import com.example.btl.ui.screen.Component.LineNumber
 import com.example.btl.ui.screen.Component.TopBar
 import com.example.btl.viewModel.SumPairsViewModel
 
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun SumPairsScreen(
+fun TwoSeriesScreen(
     modifier: Modifier = Modifier,
     onNavigateToMenuClick: () -> Unit = {},
     viewModel: SumPairsViewModel = viewModel()
@@ -52,28 +48,30 @@ fun SumPairsScreen(
             horizontalAlignment = Alignment.CenterHorizontally,
             verticalArrangement = Arrangement.Center
         ) {
-            Spacer(modifier = Modifier.height(16.dp))
-//            GridNumber(numbers = firstNumbers, selected = firstSelect) {
-//                viewModel.selectFirstNumber(it)
-//            }
+            Spacer(modifier = Modifier.weight(1f))
             LineNumber(numbers = firstNumbers, selected = firstSelect) {
                 viewModel.selectFirstNumber(it)
             }
-            Spacer(modifier = Modifier.weight(1f))
+//            GridNumber(numbers = firstNumbers, selected = firstSelect) {
+//                viewModel.selectFirstNumber(it)
+//            }
+
+            Spacer(modifier = Modifier.weight(2f))
             Card {
                 Text(
                     text = "Total Requirement $targetSum",
                     modifier = Modifier.padding(16.dp)
                 )
             }
-            Spacer(modifier = Modifier.weight(1f))
-//            GridNumber(numbers = secondNumbers, selected = secondSelect) {
-//                viewModel.selectSecondNumber(it)
-//            }
+
+            Spacer(modifier = Modifier.weight(2f))
             LineNumber(numbers = secondNumbers, selected = secondSelect) {
                 viewModel.selectSecondNumber(it)
             }
-            Spacer(modifier = Modifier.padding(16.dp))
+//            GridNumber(numbers = secondNumbers, selected = secondSelect) {
+//                viewModel.selectSecondNumber(it)
+//            }
+            Spacer(modifier = Modifier.weight(1f))
         }
 
         if (isFinished) {
@@ -115,5 +113,5 @@ private fun FinalScoreDialog(
 @Preview(showBackground = true)
 @Composable
 fun DualPlayerNumberSelectionScreenPreview() {
-    SumPairsScreen()
+    TwoSeriesScreen()
 }

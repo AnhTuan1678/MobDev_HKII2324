@@ -12,7 +12,7 @@ data class DualRowsState(
     val isCorrect: Boolean?
 )
 
-class DualRowsViewModel : ViewModel() {
+class DualPlayerViewModel : ViewModel() {
     private val _uiState = MutableStateFlow<DualRowsState>(
         DualRowsState(
             first = null,

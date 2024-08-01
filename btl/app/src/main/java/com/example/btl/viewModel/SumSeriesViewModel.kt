@@ -1,12 +1,13 @@
 package com.example.btl.viewModel
 
+import android.util.Log
 import androidx.lifecycle.ViewModel
 import com.example.btl.data.NumberState
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.update
 
-class SumPairsViewModel : ViewModel() {
+class SumSeriesViewModel : ViewModel() {
     private val _firstNumbers = MutableStateFlow<List<NumberState>>(emptyList())
     val firstNumbers: StateFlow<List<NumberState>> get() = _firstNumbers
 
@@ -34,13 +35,13 @@ class SumPairsViewModel : ViewModel() {
     private fun generateNumbers(size: Int = 10, range: IntRange = 1..10) {
         val numbers1 = List(size) { range.random() }
         val numberStates1 = numbers1.mapIndexed { index, number ->
-            NumberState(number = number, isMatched = false, position = index)
+            NumberState(number = number, isMatched = false, index = index)
         }
         _firstNumbers.value = numberStates1
 
         val numbers2 = List(size) { range.random() }
         val numberStates2 = numbers2.mapIndexed { index, number ->
-            NumberState(number = number, isMatched = false, position = index)
+            NumberState(number = number, isMatched = false, index = index)
         }
         _secondNumbers.value = numberStates2
     }
@@ -51,6 +52,7 @@ class SumPairsViewModel : ViewModel() {
         } else {
             _firstSelect.value = index
         }
+        Log.d("SumPairsViewModel", "selectSecondNumber: ${_firstSelect.value}")
         checkMatch()
     }
 
@@ -60,6 +62,7 @@ class SumPairsViewModel : ViewModel() {
         } else {
             _secondSelect.value = index
         }
+        Log.d("SumPairsViewModel", "selectSecondNumber: ${_secondSelect.value}")
         checkMatch()
     }
 
@@ -74,6 +77,9 @@ class SumPairsViewModel : ViewModel() {
             if (firstNumber.number + secondNumber.number == _targetSum.value) {
                 updateNumberState(_firstNumbers, firstIndex)
                 updateNumberState(_secondNumbers, secondIndex)
+                Log.d("SumPairsViewModel", "checkMatch: Matched")
+            }else{
+                Log.d("SumPairsViewModel", "checkMatch: Not Matched")
             }
             _firstSelect.value = null
             _secondSelect.value = null
