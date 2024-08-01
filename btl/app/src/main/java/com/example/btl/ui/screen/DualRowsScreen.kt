@@ -40,6 +40,8 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
+import com.example.btl.data.NumberState
+import com.example.btl.ui.screen.Component.LineNumber
 import com.example.btl.ui.screen.Component.TopBar
 import com.example.btl.viewModel.DualRowsState
 import com.example.btl.viewModel.DualRowsViewModel

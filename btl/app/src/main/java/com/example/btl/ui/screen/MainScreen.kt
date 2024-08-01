@@ -16,6 +16,7 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -66,7 +67,7 @@ fun MainScreen(
 }
 
 @Composable
-fun Item(modifier: Modifier = Modifier, onClick: () -> Unit = {}, str: String) {
+private fun Item(modifier: Modifier = Modifier, onClick: () -> Unit = {}, str: String) {
     Box(
         modifier = modifier
             .clickable { onClick() }
@@ -74,7 +75,9 @@ fun Item(modifier: Modifier = Modifier, onClick: () -> Unit = {}, str: String) {
             .height(50.dp)
             .background(
                 color = MaterialTheme.colorScheme.primaryContainer,
-            ),
+                shape = MaterialTheme.shapes.medium
+            )
+            .clip(MaterialTheme.shapes.medium),
         contentAlignment = Alignment.Center,
     ) {
         Text(

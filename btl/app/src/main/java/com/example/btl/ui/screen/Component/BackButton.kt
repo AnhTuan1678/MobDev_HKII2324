@@ -42,7 +42,10 @@ fun BackButton(
             title = { Text(text = "Exit") },
             text = { Text(text = "Do you want to exit?") },
             confirmButton = {
-                TextButton(onClick = { onNavigateToMenuClick() }) {
+                TextButton(onClick = {
+                    showDialog = false
+                    onNavigateToMenuClick()
+                }) {
                     Text(text = "Yes")
                 }
             },

@@ -21,6 +21,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.btl.ui.screen.Component.GridNumber
+import com.example.btl.ui.screen.Component.LineNumber
 import com.example.btl.ui.screen.Component.TopBar
 import com.example.btl.viewModel.SumPairsViewModel
 
@@ -52,7 +53,10 @@ fun SumPairsScreen(
             verticalArrangement = Arrangement.Center
         ) {
             Spacer(modifier = Modifier.height(16.dp))
-            GridNumber(numbers = firstNumbers, selected = firstSelect) {
+//            GridNumber(numbers = firstNumbers, selected = firstSelect) {
+//                viewModel.selectFirstNumber(it)
+//            }
+            LineNumber(numbers = firstNumbers, selected = firstSelect) {
                 viewModel.selectFirstNumber(it)
             }
             Spacer(modifier = Modifier.weight(1f))
@@ -63,7 +67,10 @@ fun SumPairsScreen(
                 )
             }
             Spacer(modifier = Modifier.weight(1f))
-            GridNumber(numbers = secondNumbers, selected = secondSelect) {
+//            GridNumber(numbers = secondNumbers, selected = secondSelect) {
+//                viewModel.selectSecondNumber(it)
+//            }
+            LineNumber(numbers = secondNumbers, selected = secondSelect) {
                 viewModel.selectSecondNumber(it)
             }
             Spacer(modifier = Modifier.padding(16.dp))
