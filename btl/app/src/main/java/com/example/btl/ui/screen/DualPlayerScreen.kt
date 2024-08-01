@@ -42,13 +42,13 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.btl.ui.screen.Component.TopBar
 import com.example.btl.viewModel.DualRowsState
-import com.example.btl.viewModel.DualRowsViewModel
+import com.example.btl.viewModel.DualPlayerViewModel
 import kotlinx.coroutines.delay
 
 @Composable
 fun DualPlayerScreen(
     modifier: Modifier = Modifier,
-    viewModel: DualRowsViewModel = viewModel(), onNavigateToMenuClick: () -> Unit = {}
+    viewModel: DualPlayerViewModel = viewModel(), onNavigateToMenuClick: () -> Unit = {}
 ) {
     val state by viewModel.uiState.collectAsState()
 

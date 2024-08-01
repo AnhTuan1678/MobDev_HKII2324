@@ -8,16 +8,16 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import com.example.btl.ui.screen.ConnectSumScreen
-import com.example.btl.ui.screen.DualRowsScreen
+import com.example.btl.ui.screen.DualPlayerScreen
 import com.example.btl.ui.screen.MainScreen
 import com.example.btl.ui.screen.NumberMatchScreen
-import com.example.btl.ui.screen.SumPairsScreen
+import com.example.btl.ui.screen.TwoSeriesScreen
 
 enum class Screen(val title: String) {
     Start("Start"),
-    NumberMatch("Number Match"),
-    SumPairs("Sum Pairs"),
-    DualRows("Dual Rows"),
+    NumberMatching("Number Match"),
+    TwoSeries("Two Series"),
+    DualPlayer("Dual Player"),
     ConnectSum("Connect Sum")
 }
 
@@ -30,20 +30,20 @@ fun App(navController: NavHostController = rememberNavController()) {
     ) {
         composable(route = Screen.Start.name) {
             MainScreen(
-                onClickNumberMatching = { navController.navigate(Screen.NumberMatch.name) },
-                onClickDualSelect = { navController.navigate(Screen.SumPairs.name) },
-                onClickInput = { navController.navigate(Screen.DualRows.name) },
-                onClickLink = { navController.navigate(Screen.ConnectSum.name) }
+                onClickNumberMatching = { navController.navigate(Screen.NumberMatching.name) },
+                onClickTwoSeries = { navController.navigate(Screen.TwoSeries.name) },
+                onClickDualPlayer = { navController.navigate(Screen.DualPlayer.name) },
+                onClickConnectSum = { navController.navigate(Screen.ConnectSum.name) }
             )
         }
-        composable(route = Screen.NumberMatch.name) {
+        composable(route = Screen.NumberMatching.name) {
             NumberMatchScreen(onNavigateToMenuClick = { navController.navigate(Screen.Start.name) })
         }
-        composable(route = Screen.SumPairs.name) {
-            SumPairsScreen(onNavigateToMenuClick = { navController.navigate(Screen.Start.name) })
+        composable(route = Screen.TwoSeries.name) {
+            TwoSeriesScreen(onNavigateToMenuClick = { navController.navigate(Screen.Start.name) })
         }
-        composable(route = Screen.DualRows.name) {
-            DualRowsScreen(onNavigateToMenuClick = { navController.navigate(Screen.Start.name) })
+        composable(route = Screen.DualPlayer.name) {
+            DualPlayerScreen(onNavigateToMenuClick = { navController.navigate(Screen.Start.name) })
         }
         composable(route = Screen.ConnectSum.name) {
             ConnectSumScreen(onNavigateToMenuClick = { navController.navigate(Screen.Start.name) })

@@ -27,9 +27,9 @@ import com.example.btl.ui.screen.Component.TopBar
 fun MainScreen(
     modifier: Modifier = Modifier,
     onClickNumberMatching: () -> Unit = {},
-    onClickDualSelect: () -> Unit = {},
-    onClickInput: () -> Unit = {},
-    onClickLink: () -> Unit = {}
+    onClickTwoSeries: () -> Unit = {},
+    onClickDualPlayer: () -> Unit = {},
+    onClickConnectSum: () -> Unit = {}
 ) {
     Scaffold(
         topBar = {
@@ -45,21 +45,21 @@ fun MainScreen(
         ) {
             Item(
                 onClick = onClickNumberMatching,
-                str = Screen.NumberMatch.title
+                str = Screen.NumberMatching.title
             )
             Spacer(modifier = Modifier.height(16.dp))
             Item(
-                onClick = onClickDualSelect,
-                str = Screen.DualRows.title
+                onClick = onClickTwoSeries,
+                str = Screen.TwoSeries.title
             )
             Spacer(modifier = Modifier.height(16.dp))
             Item(
-                onClick = onClickInput,
-                str = Screen.SumPairs.title
+                onClick = onClickDualPlayer,
+                str = Screen.DualPlayer.title
             )
             Spacer(modifier = Modifier.height(16.dp))
             Item(
-                onClick = onClickLink,
+                onClick = onClickConnectSum,
                 str = Screen.ConnectSum.title
             )
         }

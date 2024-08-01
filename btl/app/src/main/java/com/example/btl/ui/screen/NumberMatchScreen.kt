@@ -48,8 +48,8 @@ fun NumberMatchScreen(
     val isFinished by viewModel.isFinished.collectAsState(false)
     val score by viewModel.score.collectAsState(0)
 
-    var row by remember { mutableIntStateOf(6) } // Số hàng
-    var column by remember { mutableIntStateOf(4) } // Số cột
+    var row by remember { mutableIntStateOf(5) } // Số hàng
+    var column by remember { mutableIntStateOf(5) } // Số cột
 
     Scaffold(
         topBar = {
@@ -93,7 +93,11 @@ fun NumberMatchScreen(
 
             Spacer(modifier = Modifier.weight(1f))
 
-            GridNumber(numbers = numbers, selected = selected) { it ->
+            GridNumber(
+                numbers = numbers,
+                selected = selected,
+                column = column
+            ) { it ->
                 viewModel.selectNumber(it)
             }
             Spacer(modifier = Modifier.weight(1f))

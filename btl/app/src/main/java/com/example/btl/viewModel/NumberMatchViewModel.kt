@@ -26,15 +26,15 @@ class NumberMatchViewModel : ViewModel() {
     val score: StateFlow<Int> get() = _score
 
     init {
-        generateNumbers(24)
+        generateNumbers(25)
         _targetSum.value = (5..13).random() // Ví dụ tổng mục tiêu giữa 5 và 13
         _isFinished.value = false
     }
 
-    private fun generateNumbers(size: Int = 10, range: IntRange = 1..10) {
+    private fun generateNumbers(size: Int = 25, range: IntRange = 1..10) {
         val numbers = List(size) { range.random() }
         val numberStates = numbers.mapIndexed { index, number ->
-            NumberState(number = number, isMatched = false, position = index)
+            NumberState(number = number, isMatched = false, index = index)
         }
         _numbers.value = numberStates
     }
@@ -48,7 +48,7 @@ class NumberMatchViewModel : ViewModel() {
             _selected.value = index
         } else {
             val selectedNumber = _numbers.value.getOrNull(selected) ?: return
-            if (selectedNumber.position != currentSelected.position) {
+            if (selectedNumber.index != currentSelected.index) {
                 if (selectedNumber.number + currentSelected.number == _targetSum.value) {
                     updateNumberState(selected)
                     updateNumberState(index)
