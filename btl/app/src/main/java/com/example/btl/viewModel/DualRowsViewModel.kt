@@ -1,5 +1,6 @@
 package com.example.btl.viewModel
 
+import android.util.Log
 import androidx.lifecycle.ViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -8,7 +9,7 @@ data class DualRowsState(
     val first: Int?,
     val second: Int?,
     val total: Int?,
-    val isCorrect: Boolean
+    val isCorrect: Boolean?
 )
 
 class DualRowsViewModel : ViewModel() {
@@ -17,16 +18,16 @@ class DualRowsViewModel : ViewModel() {
             first = null,
             second = null,
             total = null,
-            isCorrect = false
+            isCorrect = null
         )
     )
     val uiState: StateFlow<DualRowsState> get() = _uiState
 
-    init{
-        resetDualRowsState()
+    init {
+        resetDualRowsState((1..100).random())
     }
 
-    fun updateDualRowsState(first: Int?, second: Int?, total: Int?, isCorrect: Boolean) {
+    fun updateDualRowsState(first: Int?, second: Int?, total: Int?, isCorrect: Boolean?) {
         _uiState.value = DualRowsState(
             first = first,
             second = second,
@@ -35,21 +36,23 @@ class DualRowsViewModel : ViewModel() {
         )
     }
 
-    private fun resetDualRowsState(total: Int? = 20) {
+    fun resetDualRowsState(total: Int? = 20) {
         _uiState.value = DualRowsState(
             first = null,
             second = null,
             total = total,
-            isCorrect = false
+            isCorrect = null
         )
     }
 
     fun checkAnswer() {
         val currentDualRowsState = _uiState.value
         if (currentDualRowsState.first != null && currentDualRowsState.second != null && currentDualRowsState.total != null) {
-            val isCorrect = currentDualRowsState.first + currentDualRowsState.second == currentDualRowsState.total
+            val isCorrect =
+                currentDualRowsState.first + currentDualRowsState.second == currentDualRowsState.total
             _uiState.value = currentDualRowsState.copy(isCorrect = isCorrect)
         }
+        Log.d("DualRowsViewModel", "checkAnswer ${currentDualRowsState.isCorrect}")
     }
 
     fun changeTotal(total: Int) {

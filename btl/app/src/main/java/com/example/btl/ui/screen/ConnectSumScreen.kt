@@ -38,7 +38,6 @@ fun ConnectSumScreen(
 ) {
     val nodes by viewModel.nodes.collectAsState()
     val total by viewModel.total.collectAsState()
-    val isCorrect by viewModel.isCorrect.collectAsState()
 
     Column(
         modifier = modifier

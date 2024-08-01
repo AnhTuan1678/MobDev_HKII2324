@@ -1,12 +1,10 @@
 package com.example.btl.viewModel
 
-import android.util.Log
 import androidx.lifecycle.ViewModel
 import com.example.btl.data.NumberState
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.update
-import kotlin.random.Random
 
 class NumberMatchViewModel : ViewModel() {
     // StateFlow để lưu trữ danh sách số
@@ -50,14 +48,14 @@ class NumberMatchViewModel : ViewModel() {
             _selected.value = index
         } else {
             val selectedNumber = _numbers.value.getOrNull(selected) ?: return
-            if(selectedNumber.position != currentSelected.position){
+            if (selectedNumber.position != currentSelected.position) {
                 if (selectedNumber.number + currentSelected.number == _targetSum.value) {
                     updateNumberState(selected)
                     updateNumberState(index)
                     _score.value += 10
-                }else{
+                } else {
                     _score.value -= 5
-                    _score.value = if(_score.value < 0) 0 else _score.value
+                    _score.value = if (_score.value < 0) 0 else _score.value
                 }
             }
             _selected.value = null

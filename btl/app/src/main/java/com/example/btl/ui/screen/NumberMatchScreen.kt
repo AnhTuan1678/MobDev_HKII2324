@@ -4,7 +4,6 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
@@ -13,14 +12,12 @@ import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Settings
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Card
-import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
-import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
@@ -31,15 +28,13 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
-import com.example.btl.ui.screen.Component.BackButton
 import com.example.btl.ui.screen.Component.GridNumber
+import com.example.btl.ui.screen.Component.TopBar
 import com.example.btl.viewModel.NumberMatchViewModel
 
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun NumberMatchScreen(
     modifier: Modifier = Modifier,
@@ -47,7 +42,7 @@ fun NumberMatchScreen(
     viewModel: NumberMatchViewModel = viewModel(),
 //    scaffoldState:
 ) {
-    val numbers by viewModel.numbers.collectAsState(emptyList())
+    val numbers by viewModel.numbers.collectAsState()
     val selected by viewModel.selected.collectAsState(null)
     val total by viewModel.targetSum.collectAsState(0)
     val isFinished by viewModel.isFinished.collectAsState(false)
@@ -58,23 +53,17 @@ fun NumberMatchScreen(
 
     Scaffold(
         topBar = {
-            TopAppBar(
-                title = {
-                    Text(
-                        text = "Number Match",
-                        modifier = Modifier.fillMaxWidth(),
-                        textAlign = TextAlign.Center
-                    )
-                },
-                navigationIcon = {
-                    BackButton(onNavigateToMenuClick)
-                }, actions = {
+            TopBar(
+                title = "Number Match",
+                onNavigateToMenuClick = onNavigateToMenuClick,
+                action = {
                     SettingsButton(row = row, column = column, total = total) { r, c, t ->
                         row = r
                         column = c
                         viewModel.reset(size = r * c, total = t)
                     }
-                })
+                }
+            )
         }
     ) {
         Column(
@@ -111,7 +100,7 @@ fun NumberMatchScreen(
 
             if (isFinished) {
                 FinalScoreDialog(
-                    score = 100,
+                    score = score,
                     onPlayAgain = { viewModel.reset(size = row * column, total = total) },
                     onExit = { onNavigateToMenuClick() }
                 )
@@ -135,7 +124,8 @@ fun SettingsButton(
     ) {
         Icon(
             imageVector = Icons.Filled.Settings,
-            contentDescription = "Menu"
+            contentDescription = "Menu",
+            tint = MaterialTheme.colorScheme.onPrimary
         )
     }
 
@@ -160,9 +150,9 @@ fun SettingsDialog(
     total: Int,
     apply: (Int, Int, Int) -> Unit = { _, _, _ -> }
 ) {
-    var _row by remember { mutableIntStateOf(row) }
-    var _column by remember { mutableIntStateOf(column) }
-    var _total by remember { mutableIntStateOf(total) }
+    var tRow by remember { mutableIntStateOf(row) }
+    var tColumn by remember { mutableIntStateOf(column) }
+    var tTotal by remember { mutableIntStateOf(total) }
     AlertDialog(
         onDismissRequest = { onDismiss() },
         title = { Text(text = "Settings") },
@@ -173,17 +163,17 @@ fun SettingsDialog(
                 ) {
                     Text(text = "Row: ")
                     Spacer(modifier = Modifier.weight(1f))
-                    IconButton(onClick = { if (_row > 4) _row-- }) {
+                    IconButton(onClick = { if (tRow > 4) tRow-- }) {
                         Icon(
                             imageVector = Icons.AutoMirrored.Filled.KeyboardArrowLeft,
                             contentDescription = "Decrease row"
                         )
                     }
                     Text(
-                        text = _row.toString(),
+                        text = tRow.toString(),
                         modifier = Modifier.padding(horizontal = 16.dp)
                     )
-                    IconButton(onClick = { if (_row < 6) _row++ }) {
+                    IconButton(onClick = { if (tRow < 6) tRow++ }) {
                         Icon(imageVector = Icons.Default.Add, contentDescription = "Increase")
                     }
                 }
@@ -194,17 +184,17 @@ fun SettingsDialog(
                 ) {
                     Text(text = "Column: ")
                     Spacer(modifier = Modifier.weight(1f))
-                    IconButton(onClick = { if (_column > 4) _column-- }) {
+                    IconButton(onClick = { if (tColumn > 4) tColumn-- }) {
                         Icon(
                             imageVector = Icons.AutoMirrored.Filled.KeyboardArrowLeft,
                             contentDescription = "Decrease column"
                         )
                     }
                     Text(
-                        text = _column.toString(),
+                        text = tColumn.toString(),
                         modifier = Modifier.padding(horizontal = 16.dp)
                     )
-                    IconButton(onClick = { if (_column < 6) _column++ }) {
+                    IconButton(onClick = { if (tColumn < 6) tColumn++ }) {
                         Icon(imageVector = Icons.Default.Add, contentDescription = "Increase")
                     }
                 }
@@ -215,17 +205,17 @@ fun SettingsDialog(
                 ) {
                     Text(text = "Total: ")
                     Spacer(modifier = Modifier.weight(1f))
-                    IconButton(onClick = { if (_total > 8) _total-- }) {
+                    IconButton(onClick = { if (tTotal > 8) tTotal-- }) {
                         Icon(
                             imageVector = Icons.AutoMirrored.Filled.KeyboardArrowLeft,
                             contentDescription = "Decrease total"
                         )
                     }
                     Text(
-                        text = _total.toString(),
+                        text = tTotal.toString(),
                         modifier = Modifier.padding(horizontal = 16.dp)
                     )
-                    IconButton(onClick = { if (_total < 18) _total++ }) {
+                    IconButton(onClick = { if (tTotal < 18) tTotal++ }) {
                         Icon(imageVector = Icons.Default.Add, contentDescription = "Increase")
                     }
                 }
@@ -233,7 +223,7 @@ fun SettingsDialog(
         },
         confirmButton = {
             TextButton(onClick = {
-                apply(_row, _column, _total)
+                apply(tRow, tColumn, tTotal)
                 onDismiss()
             }) {
                 Text(text = "Save")
