@@ -16,11 +16,15 @@ class DualRowsViewModel : ViewModel() {
         DualRowsState(
             first = null,
             second = null,
-            total = 20,
+            total = null,
             isCorrect = false
         )
     )
     val uiState: StateFlow<DualRowsState> get() = _uiState
+
+    init{
+        resetDualRowsState()
+    }
 
     fun updateDualRowsState(first: Int?, second: Int?, total: Int?, isCorrect: Boolean) {
         _uiState.value = DualRowsState(
@@ -31,11 +35,11 @@ class DualRowsViewModel : ViewModel() {
         )
     }
 
-    fun resetDualRowsState() {
+    private fun resetDualRowsState(total: Int? = 20) {
         _uiState.value = DualRowsState(
             first = null,
             second = null,
-            total = 20,
+            total = total,
             isCorrect = false
         )
     }
@@ -46,5 +50,11 @@ class DualRowsViewModel : ViewModel() {
             val isCorrect = currentDualRowsState.first + currentDualRowsState.second == currentDualRowsState.total
             _uiState.value = currentDualRowsState.copy(isCorrect = isCorrect)
         }
+    }
+
+    fun changeTotal(total: Int) {
+        val currentDualRowsState = _uiState.value
+        _uiState.value = currentDualRowsState.copy(total = total)
+        changeTotal(total)
     }
 }

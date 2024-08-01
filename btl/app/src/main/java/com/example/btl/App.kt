@@ -1,5 +1,6 @@
 package com.example.btl
 
+import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.navigation.NavHostController
@@ -20,6 +21,7 @@ enum class Screen(val title: String) {
     ConnectSum("Connect Sum")
 }
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun App(navController: NavHostController = rememberNavController()) {
     NavHost(

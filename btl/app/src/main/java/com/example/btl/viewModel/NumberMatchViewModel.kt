@@ -1,16 +1,12 @@
 package com.example.btl.viewModel
 
+import android.util.Log
 import androidx.lifecycle.ViewModel
+import com.example.btl.data.NumberState
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.update
 import kotlin.random.Random
-
-data class NumberState(
-    val number: Int,
-    val isMatched: Boolean,
-    val position: Int
-)
 
 class NumberMatchViewModel : ViewModel() {
     // StateFlow để lưu trữ danh sách số
@@ -25,9 +21,16 @@ class NumberMatchViewModel : ViewModel() {
     private val _selected = MutableStateFlow<Int?>(null)
     val selected: StateFlow<Int?> get() = _selected
 
+    private val _isFinished = MutableStateFlow<Boolean>(false)
+    val isFinished: StateFlow<Boolean> get() = _isFinished
+
+    private val _score = MutableStateFlow<Int>(0)
+    val score: StateFlow<Int> get() = _score
+
     init {
-        generateNumbers()
+        generateNumbers(24)
         _targetSum.value = (5..13).random() // Ví dụ tổng mục tiêu giữa 5 và 13
+        _isFinished.value = false
     }
 
     private fun generateNumbers(size: Int = 10, range: IntRange = 1..10) {
@@ -47,12 +50,19 @@ class NumberMatchViewModel : ViewModel() {
             _selected.value = index
         } else {
             val selectedNumber = _numbers.value.getOrNull(selected) ?: return
-            if (selectedNumber.number + currentSelected.number == _targetSum.value && selectedNumber.position != currentSelected.position) {
-                updateNumberState(selected)
-                updateNumberState(index)
+            if(selectedNumber.position != currentSelected.position){
+                if (selectedNumber.number + currentSelected.number == _targetSum.value) {
+                    updateNumberState(selected)
+                    updateNumberState(index)
+                    _score.value += 10
+                }else{
+                    _score.value -= 5
+                    _score.value = if(_score.value < 0) 0 else _score.value
+                }
             }
             _selected.value = null
         }
+        _isFinished.value = isGameFinished()
     }
 
     private fun updateNumberState(index: Int, isMatched: Boolean = true) {
@@ -66,7 +76,7 @@ class NumberMatchViewModel : ViewModel() {
         }
     }
 
-    fun isGameFinished(): Boolean {
+    private fun isGameFinished(): Boolean {
         val currentNumbers = _numbers.value
         val targetSum = _targetSum.value
 
@@ -83,9 +93,10 @@ class NumberMatchViewModel : ViewModel() {
         return true
     }
 
-    fun reset() {
-        generateNumbers()
-        _targetSum.value = (10..20).random()
+    fun reset(size: Int, total: Int?) {
+        generateNumbers(size)
+        _targetSum.value = total ?: (10..20).random()
         _selected.value = null
+        _isFinished.value = false
     }
 }
