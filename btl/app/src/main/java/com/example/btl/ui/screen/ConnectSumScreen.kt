@@ -1,136 +1,276 @@
 package com.example.btl.ui.screen
 
-import androidx.compose.foundation.background
-import androidx.compose.foundation.border
-import androidx.compose.foundation.clickable
-import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Menu
+import androidx.compose.material.icons.automirrored.filled.KeyboardArrowLeft
+import androidx.compose.material.icons.filled.Add
+import androidx.compose.material.icons.filled.Settings
+import androidx.compose.material3.AlertDialog
+import androidx.compose.material3.Card
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableIntStateOf
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
+import com.example.btl.ui.screen.Component.GridNumber
+import com.example.btl.ui.screen.Component.TopBar
 import com.example.btl.viewModel.ConnectSumViewModel
-import com.example.btl.viewModel.Node
 
 @Composable
 fun ConnectSumScreen(
     modifier: Modifier = Modifier,
+    onNavigateToMenuClick: () -> Unit = {},
     viewModel: ConnectSumViewModel = viewModel(),
-    onNavigateToMenuClick: () -> Unit = {}
+//    scaffoldState:
 ) {
-    val nodes by viewModel.nodes.collectAsState()
-    val total by viewModel.total.collectAsState()
+    val numbers by viewModel.numbers.collectAsState()
+    val selected by viewModel.selected.collectAsState(null)
+    val total by viewModel.targetSum.collectAsState(0)
+    val isFinished by viewModel.isFinished.collectAsState(false)
+    val score by viewModel.score.collectAsState(0)
 
-    Column(
-        modifier = modifier
-            .fillMaxSize()
-            .padding(16.dp)
-    ) {
-        IconButton(
-            onClick = onNavigateToMenuClick,
-            Modifier.background(color = MaterialTheme.colorScheme.primaryContainer.copy(alpha = 0.5f)),
-        ) {
-            Icon(
-                imageVector = Icons.Filled.Menu,
-                contentDescription = "Menu",
-                modifier = Modifier.padding(end = 4.dp)
-            )
-        }
+    var row by remember { mutableIntStateOf(5) } // Số hàng
+    var column by remember { mutableIntStateOf(5) } // Số cột
 
-        Text(
-            text = "Connect Numbers",
-            style = MaterialTheme.typography.titleLarge,
-            modifier = Modifier.align(Alignment.CenterHorizontally)
-        )
-
-        Spacer(modifier = Modifier.padding(16.dp))
-
-        Text(
-            text = "Total: $total",
-            style = MaterialTheme.typography.titleLarge,
-            modifier = Modifier.align(Alignment.CenterHorizontally)
-        )
-
-        Matrix(
-            modifier = Modifier.weight(1f),
-            row = 6,
-            column = 4,
-            onClick = { viewModel.selectNode(it) },
-            nodes = nodes
-        )
-    }
-}
-
-@Composable
-fun Matrix(
-    modifier: Modifier = Modifier,
-    row: Int = 4, //Số hàng
-    column: Int = 6, //Số cột
-    onClick: (Int) -> Unit = {},
-    nodes: List<Node> = emptyList()
-) {
-    Column(
-        modifier = modifier,
-        verticalArrangement = Arrangement.Center,
-        horizontalAlignment = Alignment.CenterHorizontally
-    ) {
-        for (i in 0 until row) {
-            Row(
-                modifier = Modifier
-                    .fillMaxWidth(),
-                horizontalArrangement = Arrangement.SpaceBetween
-            ) {
-                for (j in 0 until column) {
-                    val index = i * column + j
-                    Element(
-                        modifier = Modifier.weight(1f),
-                        number = nodes[index]
-                    ) {
-                        onClick(index)
+    Scaffold(
+        topBar = {
+            TopBar(
+                title = "Connect Numbers",
+                onNavigateToMenuClick = onNavigateToMenuClick,
+                action = {
+                    SettingsButton(row = row, column = column, total = total) { r, c, t ->
+                        row = r
+                        column = c
+                        viewModel.reset(row = r, column = c, total = t)
                     }
                 }
+            )
+        }
+    ) {
+        Column(
+            modifier = modifier
+                .fillMaxSize()
+                .padding(it)
+                .padding(8.dp),
+            horizontalAlignment = Alignment.CenterHorizontally
+        ) {
+            Spacer(modifier = Modifier.height(16.dp))
+            Card {
+                Text(
+                    text = "Target sum: $total",
+                    style = MaterialTheme.typography.titleLarge,
+                    modifier = Modifier.padding(8.dp)
+                )
+            }
+
+            Spacer(modifier = Modifier.height(16.dp))
+            Card {
+                Text(
+                    text = "Score: $score",
+                    style = MaterialTheme.typography.titleLarge,
+                    modifier = Modifier.padding(8.dp)
+                )
+            }
+
+            Spacer(modifier = Modifier.weight(1f))
+
+            GridNumber(
+                numbers = numbers,
+                selected = selected,
+                column = column
+            ) {
+                viewModel.selectNumber(it)
+            }
+            Spacer(modifier = Modifier.weight(1f))
+
+            if (isFinished) {
+                FinalScoreDialog(
+                    score = score,
+                    onPlayAgain = { viewModel.reset(row = row, column = column, total = total) },
+                    onExit = { onNavigateToMenuClick() }
+                )
             }
         }
     }
 }
 
 @Composable
-private fun Element(modifier: Modifier = Modifier, number: Node, onClick: () -> Unit) {
-    Box(
-        modifier = modifier
-            .padding(1.dp)
-            .aspectRatio(1f)
-            .border(1.dp, if (number.isHidden) Color.Red else Color.Black)
-            .clickable {
-                if (!number.isHidden) onClick()
-            },
-        contentAlignment = Alignment.Center
+private fun SettingsButton(
+    row: Int = 4,
+    column: Int = 6,
+    total: Int = 13,
+    apply: (Int, Int, Int) -> Unit = { _, _, _ -> },
+) {
+    var showDialog by remember { mutableStateOf(false) }
+    IconButton(
+        onClick = { showDialog = true },
+        modifier = Modifier
+            .padding(4.dp)
     ) {
-        Text(text = "${number.value}")
+        Icon(
+            imageVector = Icons.Filled.Settings,
+            contentDescription = "Menu",
+            tint = MaterialTheme.colorScheme.onPrimary
+        )
     }
+
+    if (showDialog) {
+        SettingsDialog(
+            onDismiss = { showDialog = false },
+            apply = apply,
+            row = row,
+            column = column,
+            total = total
+        )
+    }
+
 }
 
-
-@Preview(showBackground = true)
 @Composable
+private fun SettingsDialog(
+    onDismiss: () -> Unit,
+    modifier: Modifier = Modifier,
+    row: Int,
+    column: Int,
+    total: Int,
+    apply: (Int, Int, Int) -> Unit = { _, _, _ -> }
+) {
+    var tRow by remember { mutableIntStateOf(row) }
+    var tColumn by remember { mutableIntStateOf(column) }
+    var tTotal by remember { mutableIntStateOf(total) }
+    AlertDialog(
+        onDismissRequest = { onDismiss() },
+        title = { Text(text = "Settings") },
+        text = {
+            Column {
+                Row(
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    Text(text = "Row: ")
+                    Spacer(modifier = Modifier.weight(1f))
+                    IconButton(onClick = { if (tRow > 4) tRow-- }) {
+                        Icon(
+                            imageVector = Icons.AutoMirrored.Filled.KeyboardArrowLeft,
+                            contentDescription = "Decrease row"
+                        )
+                    }
+                    Text(
+                        text = tRow.toString(),
+                        modifier = Modifier.padding(horizontal = 16.dp)
+                    )
+                    IconButton(onClick = { if (tRow < 6) tRow++ }) {
+                        Icon(imageVector = Icons.Default.Add, contentDescription = "Increase")
+                    }
+                }
+                Spacer(modifier = Modifier.height(8.dp))
+
+                Row(
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    Text(text = "Column: ")
+                    Spacer(modifier = Modifier.weight(1f))
+                    IconButton(onClick = { if (tColumn > 4) tColumn-- }) {
+                        Icon(
+                            imageVector = Icons.AutoMirrored.Filled.KeyboardArrowLeft,
+                            contentDescription = "Decrease column"
+                        )
+                    }
+                    Text(
+                        text = tColumn.toString(),
+                        modifier = Modifier.padding(horizontal = 16.dp)
+                    )
+                    IconButton(onClick = { if (tColumn < 6) tColumn++ }) {
+                        Icon(imageVector = Icons.Default.Add, contentDescription = "Increase")
+                    }
+                }
+                Spacer(modifier = Modifier.height(8.dp))
+
+                Row(
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    Text(text = "Total: ")
+                    Spacer(modifier = Modifier.weight(1f))
+                    IconButton(onClick = { if (tTotal > 8) tTotal-- }) {
+                        Icon(
+                            imageVector = Icons.AutoMirrored.Filled.KeyboardArrowLeft,
+                            contentDescription = "Decrease total"
+                        )
+                    }
+                    Text(
+                        text = tTotal.toString(),
+                        modifier = Modifier.padding(horizontal = 16.dp)
+                    )
+                    IconButton(onClick = { if (tTotal < 18) tTotal++ }) {
+                        Icon(imageVector = Icons.Default.Add, contentDescription = "Increase")
+                    }
+                }
+            }
+        },
+        confirmButton = {
+            TextButton(onClick = {
+                apply(tRow, tColumn, tTotal)
+                onDismiss()
+            }) {
+                Text(text = "Save")
+            }
+        },
+        dismissButton = {
+            TextButton(onClick = onDismiss) {
+                Text(text = "Cancel", color = Color.Black)
+            }
+        },
+        modifier = modifier
+    )
+}
+
+@Composable
+private fun FinalScoreDialog(
+    score: Int,
+    onPlayAgain: () -> Unit,
+    onExit: () -> Unit,
+    modifier: Modifier = Modifier
+) {
+    AlertDialog(
+        onDismissRequest = { },
+        title = { Text(text = "Final Score: $score") },
+        text = { Text(text = "Congratulations!") },
+        modifier = modifier,
+        dismissButton = {
+            TextButton(
+                onClick = { onExit() }
+            ) {
+                Text(text = "Exit")
+            }
+        },
+        confirmButton = {
+            TextButton(onClick = onPlayAgain) {
+                Text(text = "Play Again")
+            }
+        }
+    )
+}
+
+@Composable
+@Preview(showBackground = true)
 fun ConnectSumScreenPreview() {
     ConnectSumScreen()
 }

@@ -114,7 +114,7 @@ fun NumberMatchScreen(
 }
 
 @Composable
-fun SettingsButton(
+private fun SettingsButton(
     row: Int = 4,
     column: Int = 6,
     total: Int = 13,
@@ -146,7 +146,7 @@ fun SettingsButton(
 }
 
 @Composable
-fun SettingsDialog(
+private fun SettingsDialog(
     onDismiss: () -> Unit,
     modifier: Modifier = Modifier,
     row: Int,
@@ -272,5 +272,5 @@ private fun FinalScoreDialog(
 @Composable
 @Preview(showBackground = true)
 fun NumberMatchingScreenPreview() {
-    NumberMatchScreen(viewModel = NumberMatchViewModel())
+    NumberMatchScreen()
 }

@@ -7,7 +7,7 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.update
 
-class SumSeriesViewModel : ViewModel() {
+class TwoSeriesViewModel : ViewModel() {
     private val _firstNumbers = MutableStateFlow<List<NumberState>>(emptyList())
     val firstNumbers: StateFlow<List<NumberState>> get() = _firstNumbers
 

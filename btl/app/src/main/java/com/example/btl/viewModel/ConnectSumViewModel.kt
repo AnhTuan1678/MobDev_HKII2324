@@ -1,134 +1,123 @@
 package com.example.btl.viewModel
 
-import android.util.Log
 import androidx.lifecycle.ViewModel
+import com.example.btl.algorithms.Node
+import com.example.btl.algorithms.aStarPokemon
+import com.example.btl.data.NumberState
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
-
-data class Node(
-    val value: Int,
-    val x: Int,
-    val y: Int,
-    val isHidden: Boolean = false
-)
+import kotlinx.coroutines.flow.update
 
 class ConnectSumViewModel : ViewModel() {
-    private val _nodes = MutableStateFlow<List<Node>>(emptyList())
-    val nodes: StateFlow<List<Node>> get() = _nodes
+    // StateFlow để lưu trữ danh sách số
+    private val _numbers = MutableStateFlow<List<NumberState>>(emptyList())
+    val numbers: StateFlow<List<NumberState>> get() = _numbers
 
-    private val _total = MutableStateFlow(5)
-    val total: StateFlow<Int> get() = _total
+    // StateFlow để lưu trữ tổng mục tiêu
+    private val _targetSum = MutableStateFlow(0)
+    val targetSum: StateFlow<Int> get() = _targetSum
 
-    private val _selectedNodes = MutableStateFlow<List<Node>>(emptyList())
+    // StateFlow để lưu trữ số được chọn
+    private val _selected = MutableStateFlow<Int?>(null)
+    val selected: StateFlow<Int?> get() = _selected
 
-    private val _isCorrect = MutableStateFlow(false)
-    val isCorrect: StateFlow<Boolean> get() = _isCorrect
+    private val _isFinished = MutableStateFlow(false)
+    val isFinished: StateFlow<Boolean> get() = _isFinished
+
+    private val _score = MutableStateFlow(0)
+    val score: StateFlow<Int> get() = _score
+
+    private val _row = MutableStateFlow(5)
+    val row: StateFlow<Int> get() = _row
+
+    private val _path = mutableListOf<Node>()
+    val path: List<Node> get() = _path
 
     init {
-        generateNodes(5, 5, (0..39).toList())
+        generateNumbers(5, 5, 1..4)
+        _targetSum.value = (5..6).random() // Ví dụ tổng mục tiêu giữa 5 và 13
+        _isFinished.value = false
     }
 
-    fun selectNode(index: Int) {
-        val node = _nodes.value[index]
-        if (node.isHidden) return
+    private fun generateNumbers(row: Int, column: Int, range: IntRange = 1..5) {
+        val nodes = mutableListOf<NumberState>()
+        for (i in 0 until row) {
+            for (j in 0 until column) {
+                val value = range.random()
+                nodes.add(
+                    NumberState(
+                        number = value,
+                        index = i * column + j,
+                        isMatched = false,
+                        x = i,
+                        y = j
+                    )
+                )
+            }
+        }
+        _row.value = row
+        _numbers.value = nodes
+    }
 
-        val selected = _selectedNodes.value.toMutableList()
-        if (node in selected) {
-            selected.remove(node)
+    fun selectNumber(index: Int) {
+        val currentSelected = _numbers.value.getOrNull(index) ?: return
+        val selected = _selected.value
+        if (currentSelected.isMatched) return
+
+        if (selected == null) {
+            _selected.value = index
         } else {
-            selected.add(node)
-        }
-        _selectedNodes.value = selected
-
-        if (selected.size == 2) {
-            checkAnswer()
-            _selectedNodes.value = emptyList()
-        }
-
-        Log.d("ConnectSumViewModel", "selectNode: ${_selectedNodes.value}")
-    }
-
-
-    private fun checkAnswer() {
-        val selected = _selectedNodes.value
-        val sum = selected.sumOf { it.value }
-
-        // Kiểm tra câu trả lời
-        _isCorrect.value = (sum == _total.value && canConnectWithThreeLines(selected))
-
-        if (_isCorrect.value) {
-            // Tạo danh sách các nút mới với các nút được chọn bị ẩn
-            val updatedNodes = _nodes.value.map { node ->
-                if (selected.contains(node)) {
-                    // Thay vì thay đổi thuộc tính isHidden, loại bỏ nút ra khỏi danh sách
-                    node.copy(isHidden = true)
-                } else {
-                    node
+            val selectedNumber = _numbers.value.getOrNull(selected) ?: return
+            if (
+                selectedNumber.index != currentSelected.index
+                && selectedNumber.number + currentSelected.number == _targetSum.value
+            ) {
+                val ans: Pair<List<Node>, Int>? = match(selectedNumber, currentSelected)
+                if (ans != null) {
+                    _path.clear()
+                    _path.addAll(ans.first)
+                    val turnCount = ans.second
+                    updateNumberState(selected)
+                    updateNumberState(index)
                 }
             }
-            _nodes.value = updatedNodes
+            _selected.value = null
         }
-
-        Log.d("ConnectSumViewModel", "checkAnswer: ${_isCorrect.value}")
+//        _isFinished.value = isGameFinished()
     }
 
-
-    private fun canConnectWithThreeLines(nodes: List<Node>): Boolean {
-        if (nodes.size < 2) return false
-
-        val start = nodes.first()
-        val end = nodes.last()
-
-        val visited = mutableSetOf<Node>()
-        return dfs(start, end, visited, 0)
-    }
-
-    private fun dfs(current: Node, target: Node, visited: MutableSet<Node>, turns: Int): Boolean {
-        if (turns > 3) return false
-        if (current == target) return true
-
-        visited.add(current)
-
-        // Duyệt qua tất cả các hướng (trái, phải, lên, xuống)
-        val directions = listOf(
-            current.copy(x = current.x - 1),
-            current.copy(x = current.x + 1),
-            current.copy(y = current.y - 1),
-            current.copy(y = current.y + 1)
-        )
-
-        for (next in directions) {
-            val nextNode = _nodes.value.find { it.x == next.x && it.y == next.y }
-            if (nextNode != null && nextNode !in visited && isValidMove(current, nextNode)) {
-                if (dfs(nextNode, target, visited, turns + 1)) {
-                    return true
-                }
-            }
+    private fun match(from: NumberState, to: NumberState): Pair<List<Node>, Int>? {
+        val grid = Array(_row.value) { IntArray(_row.value) }
+        for (i in _numbers.value.indices) {
+            val number = _numbers.value[i]
+            grid[number.x][number.y] = if (number.isMatched) 0 else 1
         }
 
-        visited.remove(current)
+        val start = Node(from.x, from.y, null, null)
+        val goal = Node(to.x, to.y, null, null)
+
+        return aStarPokemon(grid, start, goal)
+    }
+
+    private fun updateNumberState(index: Int, isMatched: Boolean = true) {
+        val currentNumbers = _numbers.value
+        if (index < 0 || index >= currentNumbers.size) return
+
+        val currentNumber = currentNumbers[index]
+        val updatedNumber = currentNumber.copy(isMatched = isMatched)
+        _numbers.update { numbers ->
+            numbers.toMutableList().apply { this[index] = updatedNumber }
+        }
+    }
+
+    private fun isGameFinished(): Boolean {
         return false
     }
 
-    private fun isValidMove(from: Node, to: Node): Boolean {
-        // Kiểm tra điều kiện di chuyển hợp lệ giữa hai Node
-        return to.x >= 0 && to.y >= 0 && !to.isHidden
-    }
-
-    private fun generateNodes(x: Int, y: Int, arr: List<Int>) {
-        val nodes = mutableListOf<Node>()
-        for (i in 0 until x) {
-            for (j in 0 until y) {
-                val value = (1..4).random()
-                nodes.add(Node(value, i, j, false))
-            }
-        }
-        _nodes.value = nodes
-    }
-
-    fun reset() {
-        generateNodes(5, 5, (0..39).toList())
-        _selectedNodes.value = emptyList()
-        _isCorrect.value = false
+    fun reset(row: Int, column: Int, total: Int?) {
+        generateNumbers(row, column, 1..4)
+        _targetSum.value = total ?: (10..20).random()
+        _selected.value = null
+        _isFinished.value = false
     }
 }

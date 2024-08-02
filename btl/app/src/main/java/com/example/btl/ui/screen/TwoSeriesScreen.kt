@@ -20,13 +20,13 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.btl.ui.screen.Component.LineNumber
 import com.example.btl.ui.screen.Component.TopBar
-import com.example.btl.viewModel.SumSeriesViewModel
+import com.example.btl.viewModel.TwoSeriesViewModel
 
 @Composable
 fun TwoSeriesScreen(
     modifier: Modifier = Modifier,
     onNavigateToMenuClick: () -> Unit = {},
-    viewModel: SumSeriesViewModel = viewModel()
+    viewModel: TwoSeriesViewModel = viewModel()
 ) {
     val firstNumbers by viewModel.firstNumbers.collectAsState()
     val secondNumbers by viewModel.secondNumbers.collectAsState()
