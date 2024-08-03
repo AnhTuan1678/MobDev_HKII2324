@@ -20,22 +20,25 @@ fun Element(
     onClick: () -> Unit = {},
     isClicked: Boolean = false
 ) {
-    if (numberState.isMatched) return
-    Box(
-        modifier = modifier
-            .background(
-                if (isClicked) MaterialTheme.colorScheme.secondary
-                else MaterialTheme.colorScheme.primary,
-                shape = RoundedCornerShape(16.dp)
+    if (numberState.isMatched) {
+        Box(modifier = modifier) { }
+    } else {
+        Box(
+            modifier = modifier
+                .background(
+                    if (isClicked) MaterialTheme.colorScheme.secondary
+                    else MaterialTheme.colorScheme.primary,
+                    shape = RoundedCornerShape(16.dp)
+                )
+                .clickable { onClick() }
+                .clip(RoundedCornerShape(16.dp)),
+            contentAlignment = Alignment.Center
+        ) {
+            Text(
+                text = numberState.number.toString(),
+                style = MaterialTheme.typography.titleLarge,
+                color = MaterialTheme.colorScheme.onPrimary
             )
-            .clickable { onClick() }
-            .clip(RoundedCornerShape(16.dp)),
-        contentAlignment = Alignment.Center
-    ) {
-        Text(
-            text = numberState.number.toString(),
-            style = MaterialTheme.typography.titleLarge,
-            color = MaterialTheme.colorScheme.onPrimary
-        )
+        }
     }
 }

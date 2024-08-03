@@ -1,11 +1,10 @@
 package com.example.btl.algorithms
 
-import android.util.Log
 import java.util.PriorityQueue
 
 data class Node(
-    val x: Int,
-    val y: Int,
+    val x: Int, // Tọa độ x(trục dọc)
+    val y: Int, // Tọa độ y(trục ngang)
     val parent: Node?,
     val direction: Int?,
     var g: Int = 0,
@@ -78,7 +77,7 @@ fun aStar(grid: Array<IntArray>, start: Node, goal: Node): Pair<List<Node>, Int>
     return Pair(emptyList(), -1)
 }
 
-fun reconstructPath(node: Node?): List<Node> {
+private fun reconstructPath(node: Node?): List<Node> {
     val path = mutableListOf<Node>()
     var current = node
     while (current != null) {
@@ -89,7 +88,7 @@ fun reconstructPath(node: Node?): List<Node> {
     return path
 }
 
-fun countTurns(path: List<Node>): Int {
+private fun countTurns(path: List<Node>): Int {
     if (path.isEmpty()) return 0
     var turns = 0
     var prevDirection: Int? = path[0].direction

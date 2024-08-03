@@ -1,6 +1,5 @@
 package com.example.btl.viewModel
 
-import android.util.Log
 import androidx.lifecycle.ViewModel
 import com.example.btl.data.NumberState
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -27,7 +26,7 @@ class TwoSeriesViewModel : ViewModel() {
     val isFinished: StateFlow<Boolean> get() = _isFinished
 
     init {
-        generateNumbers(10)
+        generateNumbers(2)
         _targetSum.value = (5..13).random() // Ví dụ tổng mục tiêu giữa 5 và 13
         _isFinished.value = false
     }
@@ -52,7 +51,6 @@ class TwoSeriesViewModel : ViewModel() {
         } else {
             _firstSelect.value = index
         }
-        Log.d("SumPairsViewModel", "selectSecondNumber: ${_firstSelect.value}")
         checkMatch()
     }
 
@@ -62,7 +60,6 @@ class TwoSeriesViewModel : ViewModel() {
         } else {
             _secondSelect.value = index
         }
-        Log.d("SumPairsViewModel", "selectSecondNumber: ${_secondSelect.value}")
         checkMatch()
     }
 
@@ -77,9 +74,6 @@ class TwoSeriesViewModel : ViewModel() {
             if (firstNumber.number + secondNumber.number == _targetSum.value) {
                 updateNumberState(_firstNumbers, firstIndex)
                 updateNumberState(_secondNumbers, secondIndex)
-                Log.d("SumPairsViewModel", "checkMatch: Matched")
-            }else{
-                Log.d("SumPairsViewModel", "checkMatch: Not Matched")
             }
             _firstSelect.value = null
             _secondSelect.value = null

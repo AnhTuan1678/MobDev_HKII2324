@@ -1,12 +1,15 @@
 package com.example.btl.viewModel
 
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
 import com.example.btl.algorithms.Node
 import com.example.btl.algorithms.aStarPokemon
 import com.example.btl.data.NumberState
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.update
+import kotlinx.coroutines.launch
 
 class ConnectSumViewModel : ViewModel() {
     // StateFlow để lưu trữ danh sách số
@@ -30,8 +33,8 @@ class ConnectSumViewModel : ViewModel() {
     private val _row = MutableStateFlow(5)
     val row: StateFlow<Int> get() = _row
 
-    private val _path = mutableListOf<Node>()
-    val path: List<Node> get() = _path
+    private val _path = MutableStateFlow<List<Node>>(emptyList())
+    val path: StateFlow<List<Node>> get() = _path
 
     init {
         generateNumbers(5, 5, 1..4)
@@ -74,16 +77,18 @@ class ConnectSumViewModel : ViewModel() {
             ) {
                 val ans: Pair<List<Node>, Int>? = match(selectedNumber, currentSelected)
                 if (ans != null) {
-                    _path.clear()
-                    _path.addAll(ans.first)
-                    val turnCount = ans.second
-                    updateNumberState(selected)
-                    updateNumberState(index)
+                    viewModelScope.launch {
+                        _path.value = ans.first
+                        delay(1000)
+                        _path.value = emptyList()
+                        updateNumberState(selected)
+                        updateNumberState(index)
+                        _isFinished.value = isGameFinished()
+                    }
                 }
             }
             _selected.value = null
         }
-//        _isFinished.value = isGameFinished()
     }
 
     private fun match(from: NumberState, to: NumberState): Pair<List<Node>, Int>? {
@@ -111,7 +116,23 @@ class ConnectSumViewModel : ViewModel() {
     }
 
     private fun isGameFinished(): Boolean {
-        return false
+//        Kiểm tra xem có cặp số nào có tổng bằng mục tiêu không
+        for (i in _numbers.value.indices) {
+            for (j in _numbers.value.indices) {
+                if (i == j) continue
+                val number1 = _numbers.value[i]
+                val number2 = _numbers.value[j]
+                if (number1.isMatched || number2.isMatched) continue
+                if (number1.number + number2.number == _targetSum.value) {
+//                    Kiểm tra Match
+                    val ans: Pair<List<Node>, Int>? = match(number1, number2)
+                    if (ans != null) {
+                        return false
+                    }
+                }
+            }
+        }
+        return true
     }
 
     fun reset(row: Int, column: Int, total: Int?) {

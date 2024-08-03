@@ -39,14 +39,14 @@ import com.example.btl.viewModel.ConnectSumViewModel
 fun ConnectSumScreen(
     modifier: Modifier = Modifier,
     onNavigateToMenuClick: () -> Unit = {},
-    viewModel: ConnectSumViewModel = viewModel(),
-//    scaffoldState:
+    viewModel: ConnectSumViewModel = viewModel()
 ) {
     val numbers by viewModel.numbers.collectAsState()
     val selected by viewModel.selected.collectAsState(null)
     val total by viewModel.targetSum.collectAsState(0)
     val isFinished by viewModel.isFinished.collectAsState(false)
     val score by viewModel.score.collectAsState(0)
+    val path by viewModel.path.collectAsState()
 
     var row by remember { mutableIntStateOf(5) } // Số hàng
     var column by remember { mutableIntStateOf(5) } // Số cột
@@ -96,7 +96,8 @@ fun ConnectSumScreen(
             GridNumber(
                 numbers = numbers,
                 selected = selected,
-                column = column
+                column = column,
+                path = path,
             ) {
                 viewModel.selectNumber(it)
             }
