@@ -4,7 +4,7 @@ import androidx.lifecycle.ViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 
-data class DualRowsState(
+data class DualPlayerState(
     val first: Int?,
     val second: Int?,
     val total: Int?,
@@ -13,8 +13,8 @@ data class DualRowsState(
 )
 
 class DualPlayerViewModel : ViewModel() {
-    private val _uiState = MutableStateFlow<DualRowsState>(
-        DualRowsState(
+    private val _uiState = MutableStateFlow<DualPlayerState>(
+        DualPlayerState(
             first = null,
             second = null,
             total = null,
@@ -22,14 +22,14 @@ class DualPlayerViewModel : ViewModel() {
             correctCount = 0
         )
     )
-    val uiState: StateFlow<DualRowsState> get() = _uiState
+    val uiState: StateFlow<DualPlayerState> get() = _uiState
 
     init {
         reset((1..100).random())
     }
 
-    fun updateDualRowsState(first: Int?, second: Int?, total: Int?, isCorrect: Boolean?) {
-        _uiState.value = DualRowsState(
+    fun updateDualPlayerState(first: Int?, second: Int?, total: Int?, isCorrect: Boolean?) {
+        _uiState.value = DualPlayerState(
             first = first,
             second = second,
             total = total,
@@ -39,7 +39,7 @@ class DualPlayerViewModel : ViewModel() {
     }
 
     fun reset(total: Int? = 20) {
-        _uiState.value = DualRowsState(
+        _uiState.value = DualPlayerState(
             first = null,
             second = null,
             total = total,
@@ -53,13 +53,10 @@ class DualPlayerViewModel : ViewModel() {
         if (currentDualRowsState.first != null && currentDualRowsState.second != null && currentDualRowsState.total != null) {
             val isCorrect =
                 currentDualRowsState.first + currentDualRowsState.second == currentDualRowsState.total
-            _uiState.value = currentDualRowsState.copy(isCorrect = isCorrect)
+            _uiState.value = currentDualRowsState.copy(
+                isCorrect = isCorrect,
+                correctCount = currentDualRowsState.correctCount + if (isCorrect) 1 else 0
+            )
         }
-    }
-
-    fun changeTotal(total: Int) {
-        val currentDualRowsState = _uiState.value
-        _uiState.value = currentDualRowsState.copy(total = total)
-        changeTotal(total)
     }
 }

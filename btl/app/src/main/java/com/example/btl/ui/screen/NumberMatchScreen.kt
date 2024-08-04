@@ -53,7 +53,11 @@ fun NumberMatchScreen(
                 title = "Number Match",
                 onNavigateToMenuClick = onNavigateToMenuClick,
                 action = {
-                    SettingsButton(row = row, column = column, total = uiState.targetSum) { r, c, t ->
+                    SettingsButton(
+                        row = row,
+                        column = column,
+                        total = uiState.targetSum
+                    ) { r, c, t ->
                         row = r
                         column = c
                         viewModel.reset(size = r * c, total = t)
@@ -101,7 +105,12 @@ fun NumberMatchScreen(
             if (uiState.isFinished) {
                 FinalScoreDialog(
                     score = uiState.score,
-                    onPlayAgain = { viewModel.reset(size = row * column, total = uiState.targetSum) },
+                    onPlayAgain = {
+                        viewModel.reset(
+                            size = row * column,
+                            total = uiState.targetSum
+                        )
+                    },
                     onExit = { onNavigateToMenuClick() }
                 )
             }

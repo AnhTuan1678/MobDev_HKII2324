@@ -41,12 +41,7 @@ fun ConnectSumScreen(
     onNavigateToMenuClick: () -> Unit = {},
     viewModel: ConnectSumViewModel = viewModel()
 ) {
-    val numbers by viewModel.numbers.collectAsState()
-    val selected by viewModel.selected.collectAsState(null)
-    val total by viewModel.targetSum.collectAsState(0)
-    val isFinished by viewModel.isFinished.collectAsState(false)
-    val score by viewModel.score.collectAsState(0)
-    val path by viewModel.path.collectAsState()
+    val uiState by viewModel.state.collectAsState()
 
     var row by remember { mutableIntStateOf(5) } // Số hàng
     var column by remember { mutableIntStateOf(5) } // Số cột
@@ -57,7 +52,11 @@ fun ConnectSumScreen(
                 title = "Connect Numbers",
                 onNavigateToMenuClick = onNavigateToMenuClick,
                 action = {
-                    SettingsButton(row = row, column = column, total = total) { r, c, t ->
+                    SettingsButton(
+                        row = row,
+                        column = column,
+                        total = uiState.targetSum
+                    ) { r, c, t ->
                         row = r
                         column = c
                         viewModel.reset(row = r, column = c, total = t)
@@ -76,7 +75,7 @@ fun ConnectSumScreen(
             Spacer(modifier = Modifier.height(16.dp))
             Card {
                 Text(
-                    text = "Target sum: $total",
+                    text = "Target sum: ${uiState.targetSum}",
                     style = MaterialTheme.typography.titleLarge,
                     modifier = Modifier.padding(8.dp)
                 )
@@ -85,7 +84,7 @@ fun ConnectSumScreen(
             Spacer(modifier = Modifier.height(16.dp))
             Card {
                 Text(
-                    text = "Score: $score",
+                    text = "Score: ${uiState.score}",
                     style = MaterialTheme.typography.titleLarge,
                     modifier = Modifier.padding(8.dp)
                 )
@@ -94,19 +93,25 @@ fun ConnectSumScreen(
             Spacer(modifier = Modifier.weight(1f))
 
             GridNumber(
-                numbers = numbers,
-                selected = selected,
+                numbers = uiState.numbers,
+                selected = uiState.selected,
                 column = column,
-                path = path,
+                path = uiState.path,
             ) {
                 viewModel.selectNumber(it)
             }
             Spacer(modifier = Modifier.weight(1f))
 
-            if (isFinished) {
+            if (uiState.isFinished) {
                 FinalScoreDialog(
-                    score = score,
-                    onPlayAgain = { viewModel.reset(row = row, column = column, total = total) },
+                    score = uiState.score,
+                    onPlayAgain = {
+                        viewModel.reset(
+                            row = row,
+                            column = column,
+                            total = uiState.targetSum
+                        )
+                    },
                     onExit = { onNavigateToMenuClick() }
                 )
             }

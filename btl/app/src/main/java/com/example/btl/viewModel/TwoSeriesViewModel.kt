@@ -64,7 +64,13 @@ class TwoSeriesViewModel : ViewModel() {
                 updateNumberState(firstIndex, isFirst = true)
                 updateNumberState(secondIndex, isFirst = false)
             }
-            _state.update { it.copy(firstSelect = null, secondSelect = null, isFinished = isGameFinished()) }
+            _state.update {
+                it.copy(
+                    firstSelect = null,
+                    secondSelect = null,
+                    isFinished = isGameFinished()
+                )
+            }
         }
     }
 
@@ -101,6 +107,13 @@ class TwoSeriesViewModel : ViewModel() {
     fun reset(size: Int = SIZE, total: Int?) {
         val targetSum = total ?: (10..20).random()
         generateNumbers(size = size, range = 1 until targetSum)
-        _state.update { it.copy(targetSum = targetSum, firstSelect = null, secondSelect = null, isFinished = false) }
+        _state.update {
+            it.copy(
+                targetSum = targetSum,
+                firstSelect = null,
+                secondSelect = null,
+                isFinished = false
+            )
+        }
     }
 }

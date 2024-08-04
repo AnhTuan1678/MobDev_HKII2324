@@ -41,8 +41,8 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.btl.ui.screen.Component.TopBar
+import com.example.btl.viewModel.DualPlayerState
 import com.example.btl.viewModel.DualPlayerViewModel
-import com.example.btl.viewModel.DualRowsState
 import kotlinx.coroutines.delay
 
 @Composable
@@ -88,7 +88,7 @@ fun DualPlayerScreen(
                     modifier = Modifier.weight(3f),
                     state = state,
                     onValueChange = {
-                        viewModel.updateDualRowsState(
+                        viewModel.updateDualPlayerState(
                             first = it.toIntOrNull(),
                             second = state.second,
                             total = state.total,
@@ -117,7 +117,7 @@ fun DualPlayerScreen(
                     state = state,
                     str = "Player 2",
                     onValueChange = {
-                        viewModel.updateDualRowsState(
+                        viewModel.updateDualPlayerState(
                             first = state.first,
                             second = it.toIntOrNull(),
                             total = state.total,
@@ -146,7 +146,7 @@ fun DualPlayerScreen(
 @Composable
 private fun NumberInput(
     modifier: Modifier = Modifier,
-    state: DualRowsState,
+    state: DualPlayerState,
     str: String = "Player 1",
     onFocusLost: () -> Unit = {},
     onValueChange: (String) -> Unit = { _ -> },
