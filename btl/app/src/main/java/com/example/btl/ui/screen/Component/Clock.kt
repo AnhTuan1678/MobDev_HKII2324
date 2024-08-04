@@ -21,40 +21,50 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import kotlinx.coroutines.delay
 
+data class ClockSettings(
+    val minutes: Int = 0,
+    val seconds: Int = 0,
+    val isCountDown: Boolean = false,
+)
 @SuppressLint("DefaultLocale")
 @Composable
 fun Clock(
     modifier: Modifier = Modifier,
     isRestart: Boolean = false,
+    isPause: Boolean = false,
+    settings: ClockSettings = ClockSettings(),
     onTimeUpdate: (minutes: Int, seconds: Int, showColon: Boolean) -> Unit = { _, _, _ -> },
 ) {
-    var seconds by remember { mutableIntStateOf(0) }
-    var minutes by remember { mutableIntStateOf(0) }
+    var seconds by remember { mutableIntStateOf(settings.seconds) }
+    var minutes by remember { mutableIntStateOf(settings.minutes) }
     var showColon by remember { mutableStateOf(true) }
 
-    LaunchedEffect(Unit) {
-        while (true) {
-            delay(1000L)
-            seconds++
-            if (seconds == 60) {
-                seconds = 0
-                minutes++
+    LaunchedEffect(isPause) {
+        while (!isPause) {
+            delay(500L)
+            showColon = !showColon
+            delay(500L)
+            if(settings.isCountDown) {
+                seconds--
+                if (seconds == -1) {
+                    seconds = 59
+                    minutes--
+                }
+            } else {
+                seconds++
+                if (seconds == 60) {
+                    seconds = 0
+                    minutes++
+                }
             }
             onTimeUpdate(minutes, seconds, showColon)
         }
     }
 
-    LaunchedEffect(Unit) {
-        while (true) {
-            delay(500L)
-            showColon = !showColon
-        }
-    }
-
     LaunchedEffect(isRestart) {
         if (isRestart) {
-            seconds = 0
-            minutes = 0
+            seconds = settings.seconds
+            minutes = settings.minutes
         }
     }
 

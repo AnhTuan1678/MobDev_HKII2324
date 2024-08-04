@@ -9,6 +9,7 @@ import androidx.navigation.compose.rememberNavController
 import com.example.btl.ui.screen.ConnectSumScreen
 import com.example.btl.ui.screen.DualPlayerScreen
 import com.example.btl.ui.screen.MainScreen
+import com.example.btl.ui.screen.MarathonScreen
 import com.example.btl.ui.screen.NumberMatchScreen
 import com.example.btl.ui.screen.TwoSeriesScreen
 
@@ -17,7 +18,8 @@ enum class Screen(val title: String) {
     NumberMatching("Number Match"),
     TwoSeries("Two Series"),
     DualPlayer("Dual Player"),
-    ConnectSum("Connect Sum")
+    ConnectSum("Connect Sum"),
+    Marathon("Marathon")
 }
 
 @Composable
@@ -31,7 +33,8 @@ fun App(navController: NavHostController = rememberNavController()) {
                 onClickNumberMatching = { navController.navigate(Screen.NumberMatching.name) },
                 onClickTwoSeries = { navController.navigate(Screen.TwoSeries.name) },
                 onClickDualPlayer = { navController.navigate(Screen.DualPlayer.name) },
-                onClickConnectSum = { navController.navigate(Screen.ConnectSum.name) }
+                onClickConnectSum = { navController.navigate(Screen.ConnectSum.name) },
+                onClickMarathon = { navController.navigate(Screen.Marathon.name) }
             )
         }
         composable(route = Screen.NumberMatching.name) {
@@ -45,6 +48,9 @@ fun App(navController: NavHostController = rememberNavController()) {
         }
         composable(route = Screen.ConnectSum.name) {
             ConnectSumScreen(onNavigateToMenuClick = { navController.navigate(Screen.Start.name) })
+        }
+        composable(route = Screen.Marathon.name) {
+             MarathonScreen(onNavigateToMenuClick = { navController.navigate(Screen.Start.name) })
         }
     }
 }

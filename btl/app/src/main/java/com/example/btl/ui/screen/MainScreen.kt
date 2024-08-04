@@ -28,7 +28,8 @@ fun MainScreen(
     onClickNumberMatching: () -> Unit = {},
     onClickTwoSeries: () -> Unit = {},
     onClickDualPlayer: () -> Unit = {},
-    onClickConnectSum: () -> Unit = {}
+    onClickConnectSum: () -> Unit = {},
+    onClickMarathon: () -> Unit = {},
 ) {
     Scaffold(
         topBar = {
@@ -57,6 +58,10 @@ fun MainScreen(
             Item(
                 onClick = onClickConnectSum,
                 str = Screen.ConnectSum.title
+            )
+            Item(
+                onClick = onClickMarathon,
+                str = Screen.Marathon.title
             )
         }
     }
