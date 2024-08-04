@@ -1,12 +1,14 @@
 package com.example.btl.ui.screen.Component
 
 import android.annotation.SuppressLint
-import androidx.compose.foundation.MutatePriority
+import android.util.Log
+import androidx.compose.animation.core.LinearEasing
+import androidx.compose.animation.core.tween
+import androidx.compose.foundation.gestures.animateScrollBy
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.material3.Text
@@ -16,17 +18,13 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.example.btl.data.NumberState
 import kotlinx.coroutines.delay
-import kotlinx.coroutines.launch
-
-private const val DELAY_TIME = 5L
-private const val SCROLL_DX = 2F
 
 @SuppressLint("FrequentlyChangedStateReadInComposition", "CoroutineCreationDuringComposition")
 @Composable
@@ -36,71 +34,49 @@ fun LineNumber(
     selected: Int?,
     onClick: (Int) -> Unit,
 ) {
-    var itemListState by remember { mutableStateOf(numbers) }
-    var lastIndex by remember { mutableIntStateOf(0) }
     val lazyListState = rememberLazyListState()
+    var scrollDirection by remember { mutableIntStateOf(1) } // 1 = to right, -1 = to left
+
+    val elementSize = with(LocalDensity.current) { 100.dp.toPx() }
+    val elementPadding = with(LocalDensity.current) { 4.dp.toPx() }
+    val count = numbers.count { !it.isMatched }
+    LaunchedEffect(Unit) {
+        delay(1000)
+        val needToScrollItems = count - lazyListState.layoutInfo.visibleItemsInfo.size + 1
+        val scrollWidth = needToScrollItems * (elementSize + elementPadding)
+        while (true) {
+            lazyListState.animateScrollBy(
+                value = scrollDirection * scrollWidth,
+                animationSpec = tween(
+                    durationMillis = 1000 * needToScrollItems,
+                    easing = LinearEasing
+                )
+            )
+            scrollDirection *= -1
+        }
+    }
 
     LazyRow(
         state = lazyListState,
+        userScrollEnabled = false,
         modifier = modifier
     ) {
-        items(
-            itemListState.size
-        ) { index ->
-            val numberState = itemListState[index]
+        items(numbers.size) { index ->
+            val numberState = numbers[index]
             Element(
                 numberState = numberState,
                 modifier = Modifier
                     .height(100.dp)
                     .aspectRatio(1f)
                     .padding(4.dp),
-                onClick = {
-                    onClick(numberState.index)
-                    lastIndex = numberState.index
-                },
-                isClicked = selected == numberState.index
-            )
-
-            if (itemListState[index] == itemListState.last()) {
-                val currentList = itemListState
-                val secondPart = currentList.subList(0, lazyListState.firstVisibleItemIndex)
-                val firstPart =
-                    currentList.subList(lazyListState.firstVisibleItemIndex, currentList.size)
-
-                rememberCoroutineScope().launch {
-                    lazyListState.scrollToItem(
-                        0,
-                        lazyListState.firstVisibleItemScrollOffset - SCROLL_DX.toInt(),
-                    )
-                }
-
-                itemListState = firstPart + secondPart
+                isClicked = selected == numberState.index,
+                showMatched = false
+            ) {
+                onClick(numberState.index)
+                Log.d("TwoSeriesViewModel", "selectFirstNumber: $numberState")
             }
         }
     }
-
-    LaunchedEffect(Unit) {
-        autoScroll(lazyListState)
-    }
-
-    LaunchedEffect(numbers) {
-        val temp = numbers[lastIndex]
-        itemListState = numbers.map {
-            if (it.index == temp.index) {
-                it.copy(isMatched = true)
-            } else {
-                it
-            }
-        }
-    }
-}
-
-private tailrec suspend fun autoScroll(lazyListState: LazyListState) {
-    lazyListState.scroll(MutatePriority.PreventUserInput) {
-        scrollBy(SCROLL_DX)
-    }
-    delay(DELAY_TIME)
-    autoScroll(lazyListState)
 }
 
 @Preview(showBackground = true)
@@ -108,7 +84,7 @@ private tailrec suspend fun autoScroll(lazyListState: LazyListState) {
 fun LineNumberPreview() {
     val numbers: List<NumberState> by remember {
         mutableStateOf(
-            List(10) {
+            List(3) {
                 NumberState((1..9).random(), false, it)
             }
         )

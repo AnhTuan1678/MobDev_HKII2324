@@ -5,11 +5,10 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.width
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
@@ -39,25 +38,22 @@ fun MainScreen(
         Column(
             modifier = modifier
                 .padding(it)
+                .padding(16.dp)
                 .fillMaxSize(),
-            verticalArrangement = Arrangement.Center,
-            horizontalAlignment = Alignment.CenterHorizontally
+            verticalArrangement = Arrangement.spacedBy(16.dp),
         ) {
             Item(
                 onClick = onClickNumberMatching,
                 str = Screen.NumberMatching.title
             )
-            Spacer(modifier = Modifier.height(16.dp))
             Item(
                 onClick = onClickTwoSeries,
                 str = Screen.TwoSeries.title
             )
-            Spacer(modifier = Modifier.height(16.dp))
             Item(
                 onClick = onClickDualPlayer,
                 str = Screen.DualPlayer.title
             )
-            Spacer(modifier = Modifier.height(16.dp))
             Item(
                 onClick = onClickConnectSum,
                 str = Screen.ConnectSum.title
@@ -71,8 +67,8 @@ private fun Item(modifier: Modifier = Modifier, onClick: () -> Unit = {}, str: S
     Box(
         modifier = modifier
             .clickable { onClick() }
-            .width(300.dp)
-            .height(50.dp)
+            .fillMaxWidth()
+            .aspectRatio(4f)
             .background(
                 color = MaterialTheme.colorScheme.primaryContainer,
                 shape = MaterialTheme.shapes.medium

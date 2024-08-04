@@ -1,6 +1,5 @@
 package com.example.btl.viewModel
 
-import android.util.Log
 import androidx.lifecycle.ViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -52,7 +51,6 @@ class DualPlayerViewModel : ViewModel() {
                 currentDualRowsState.first + currentDualRowsState.second == currentDualRowsState.total
             _uiState.value = currentDualRowsState.copy(isCorrect = isCorrect)
         }
-        Log.d("DualRowsViewModel", "checkAnswer ${currentDualRowsState.isCorrect}")
     }
 
     fun changeTotal(total: Int) {

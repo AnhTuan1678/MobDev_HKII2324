@@ -17,17 +17,18 @@ import com.example.btl.data.NumberState
 fun Element(
     numberState: NumberState,
     modifier: Modifier = Modifier,
+    isClicked: Boolean = false,
+    showMatched: Boolean = true,
     onClick: () -> Unit = {},
-    isClicked: Boolean = false
 ) {
     if (numberState.isMatched) {
-        Box(modifier = modifier) { }
+        if (showMatched) Box(modifier = modifier) { }
     } else {
         Box(
             modifier = modifier
                 .background(
-                    if (isClicked) MaterialTheme.colorScheme.secondary
-                    else MaterialTheme.colorScheme.primary,
+                    if (isClicked) MaterialTheme.colorScheme.secondaryContainer
+                    else MaterialTheme.colorScheme.primaryContainer,
                     shape = RoundedCornerShape(16.dp)
                 )
                 .clickable { onClick() }
@@ -37,7 +38,7 @@ fun Element(
             Text(
                 text = numberState.number.toString(),
                 style = MaterialTheme.typography.titleLarge,
-                color = MaterialTheme.colorScheme.onPrimary
+                color = MaterialTheme.colorScheme.onPrimaryContainer
             )
         }
     }

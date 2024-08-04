@@ -6,6 +6,8 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.update
 
+private const val SIZE = 12
+
 class TwoSeriesViewModel : ViewModel() {
     private val _firstNumbers = MutableStateFlow<List<NumberState>>(emptyList())
     val firstNumbers: StateFlow<List<NumberState>> get() = _firstNumbers
@@ -25,13 +27,12 @@ class TwoSeriesViewModel : ViewModel() {
     private val _isFinished = MutableStateFlow<Boolean>(false)
     val isFinished: StateFlow<Boolean> get() = _isFinished
 
+
     init {
-        generateNumbers(2)
-        _targetSum.value = (5..13).random() // Ví dụ tổng mục tiêu giữa 5 và 13
-        _isFinished.value = false
+        reset(SIZE, (1..10).random())
     }
 
-    private fun generateNumbers(size: Int = 10, range: IntRange = 1..10) {
+    private fun generateNumbers(size: Int = SIZE, range: IntRange = 1..10) {
         val numbers1 = List(size) { range.random() }
         val numberStates1 = numbers1.mapIndexed { index, number ->
             NumberState(number = number, isMatched = false, index = index)
@@ -112,9 +113,9 @@ class TwoSeriesViewModel : ViewModel() {
         return true
     }
 
-    fun reset(size: Int, total: Int?) {
-        generateNumbers(size)
+    fun reset(size: Int = SIZE, total: Int?) {
         _targetSum.value = total ?: (10..20).random()
+        generateNumbers(size = size, range = 1..<_targetSum.value)
         _firstSelect.value = null
         _secondSelect.value = null
         _isFinished.value = false

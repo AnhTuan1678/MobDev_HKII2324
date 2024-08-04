@@ -1,6 +1,5 @@
 package com.example.btl.ui.screen.Component
 
-import android.util.Log
 import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.PaddingValues
@@ -10,11 +9,11 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.geometry.Offset
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.example.btl.algorithms.Node
@@ -55,24 +54,31 @@ fun GridNumber(
             }
         }
 
+
         if (path != null && path.size >= 2) {
+            val lineColor = MaterialTheme.colorScheme.error
+            val lineWeight = 12f
+
             Canvas(modifier = modifier.fillMaxWidth()) {
-                val cellSize = (size.width - 4.dp.toPx()) / column // Bằng chiều ngang của ô cộng với padding
+                val cellSize =
+                    (size.width - 4.dp.toPx()) / column // Bằng chiều ngang của ô cộng với padding
+                val offsetPx = 2.dp.toPx()
 
                 for (i in 0 until path.size - 1) {
                     val start = path[i]
                     val end = path[i + 1]
+
+                    // Tính toán tọa độ
+                    val startX = start.y * cellSize - cellSize / 2 + offsetPx
+                    val startY = start.x * cellSize - cellSize / 2 + offsetPx
+                    val endX = end.y * cellSize - cellSize / 2 + offsetPx
+                    val endY = end.x * cellSize - cellSize / 2 + offsetPx
+
                     drawLine(
-                        color = Color.Red, // Màu của đường kẻ
-                        start = Offset(
-                            x = start.y * cellSize - cellSize / 2 + 2.dp.toPx(),
-                            y = start.x * cellSize - cellSize / 2 + 2.dp.toPx()
-                        ),
-                        end = Offset(
-                            x = end.y * cellSize - cellSize / 2 + 2.dp.toPx(),
-                            y = end.x * cellSize - cellSize / 2 + 2.dp.toPx()
-                        ),
-                        strokeWidth = 4f
+                        color = lineColor, // Màu của đường kẻ
+                        start = Offset(x = startX, y = startY),
+                        end = Offset(x = endX, y = endY),
+                        strokeWidth = lineWeight
                     )
                 }
             }

@@ -1,9 +1,11 @@
 package com.example.btl.ui.screen
 
+import android.util.Log
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Card
@@ -30,10 +32,10 @@ fun TwoSeriesScreen(
 ) {
     val firstNumbers by viewModel.firstNumbers.collectAsState()
     val secondNumbers by viewModel.secondNumbers.collectAsState()
-    val targetSum by viewModel.targetSum.collectAsState(0)
-    val firstSelect by viewModel.firstSelect.collectAsState(null)
-    val secondSelect by viewModel.secondSelect.collectAsState(null)
-    val isFinished by viewModel.isFinished.collectAsState(false)
+    val targetSum by viewModel.targetSum.collectAsState()
+    val firstSelect by viewModel.firstSelect.collectAsState()
+    val secondSelect by viewModel.secondSelect.collectAsState()
+    val isFinished by viewModel.isFinished.collectAsState()
 
     Scaffold(
         topBar = {
@@ -43,45 +45,46 @@ fun TwoSeriesScreen(
             )
         }
     ) {
-        Column(
-            modifier = modifier
-                .fillMaxSize()
-                .padding(it)
-                .padding(4.dp),
-            horizontalAlignment = Alignment.CenterHorizontally,
-            verticalArrangement = Arrangement.Center
-        ) {
-            Spacer(modifier = Modifier.weight(1f))
-            LineNumber(numbers = firstNumbers, selected = firstSelect) {
-                viewModel.selectFirstNumber(it)
-            }
-//            GridNumber(numbers = firstNumbers, selected = firstSelect) {
-//                viewModel.selectFirstNumber(it)
-//            }
-
-            Spacer(modifier = Modifier.weight(2f))
-            Card {
-                Text(
-                    text = "Total Requirement $targetSum",
-                    modifier = Modifier.padding(16.dp)
-                )
-            }
-
-            Spacer(modifier = Modifier.weight(2f))
-            LineNumber(numbers = secondNumbers, selected = secondSelect) {
-                viewModel.selectSecondNumber(it)
-            }
-//            GridNumber(numbers = secondNumbers, selected = secondSelect) {
-//                viewModel.selectSecondNumber(it)
-//            }
-            Spacer(modifier = Modifier.weight(1f))
-        }
-
         if (isFinished) {
             FinalScoreDialog(
                 onPlayAgain = { viewModel.reset(size = 12, total = 14) },
                 onExit = onNavigateToMenuClick
             )
+        } else {
+            Column(
+                modifier = modifier
+                    .fillMaxSize()
+                    .padding(it)
+                    .padding(4.dp),
+                horizontalAlignment = Alignment.CenterHorizontally,
+                verticalArrangement = Arrangement.Center
+            ) {
+                Spacer(modifier = Modifier.weight(1f))
+
+                LineNumber(numbers = firstNumbers, selected = firstSelect) {
+                    viewModel.selectFirstNumber(it)
+                    Log.d("TwoSeriesViewModel", "selectFirstNumber: ${firstNumbers[it]}")
+                }
+                Spacer(modifier = Modifier.height(16.dp))
+                Text(text = "Select: ${if (firstSelect != null) firstNumbers[firstSelect!!].number else "None"}")
+
+                Spacer(modifier = Modifier.weight(2f))
+                Card {
+                    Text(
+                        text = "Total Requirement $targetSum",
+                        modifier = Modifier.padding(16.dp)
+                    )
+                }
+
+                Spacer(modifier = Modifier.weight(2f))
+                Text(text = "Select: ${if (secondSelect != null) secondNumbers[secondSelect!!].number else "None"}")
+
+                Spacer(modifier = Modifier.height(16.dp))
+                LineNumber(numbers = secondNumbers, selected = secondSelect) {
+                    viewModel.selectSecondNumber(it)
+                }
+                Spacer(modifier = Modifier.weight(1f))
+            }
         }
     }
 }
