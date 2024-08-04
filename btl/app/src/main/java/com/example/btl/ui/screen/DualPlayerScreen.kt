@@ -339,11 +339,11 @@ private fun FinalScoreDialog(
 ) {
     AlertDialog(
         onDismissRequest = { onExit() },
-        title = { Text("Final Score") },
+        title = { Text(text = "Game Finished") },
         text = {
             Column {
-                Text("Correct: $correct")
-                Text(text = "Play again?", style = MaterialTheme.typography.bodyMedium)
+                Text(text = "Your correct answers: $correct")
+                Text(text = "Time: 2:00")
             }
         },
         confirmButton = {

@@ -43,12 +43,13 @@ fun NumberMatchScreen(
     modifier: Modifier = Modifier,
     onNavigateToMenuClick: () -> Unit = {},
     viewModel: NumberMatchViewModel = viewModel(),
-//    scaffoldState:
 ) {
     val uiState by viewModel.state.collectAsState()
 
     var row by remember { mutableIntStateOf(5) } // Số hàng
     var column by remember { mutableIntStateOf(5) } // Số cột
+    var restartClock by remember { mutableStateOf(false) }
+    var time by remember { mutableStateOf("") }
 
     Scaffold(
         topBar = {
@@ -64,6 +65,7 @@ fun NumberMatchScreen(
                         row = r
                         column = c
                         viewModel.reset(size = r * c, total = t)
+                        restartClock = true
                     }
                 }
             )
@@ -80,7 +82,16 @@ fun NumberMatchScreen(
             GameInfo(
                 targetSum = uiState.targetSum,
                 score = uiState.score,
-                correct = uiState.correctCunt
+                correct = uiState.correctCunt,
+                isRestartClock = if (restartClock) {
+                    restartClock = false
+                    true
+                } else false,
+                onTimeUpdate = { t ->
+                    if (!uiState.isFinished) {
+                        time = t
+                    }
+                }
             )
             Spacer(modifier = Modifier.height(8.dp))
             GridNumber(
@@ -97,11 +108,13 @@ fun NumberMatchScreen(
         if (uiState.isFinished) {
             FinalScoreDialog(
                 score = uiState.score,
+                time = time,
                 onPlayAgain = {
                     viewModel.reset(
                         size = row * column,
                         total = uiState.targetSum
                     )
+                    restartClock = true
                 },
                 onExit = { onNavigateToMenuClick() }
             )
@@ -111,10 +124,12 @@ fun NumberMatchScreen(
 
 @Composable
 private fun GameInfo(
+    modifier: Modifier = Modifier,
     targetSum: Int,
     score: Int,
     correct: Int,
-    modifier: Modifier = Modifier
+    onTimeUpdate: (String) -> Unit = {},
+    isRestartClock: Boolean = false
 ) {
     Column(
         modifier = modifier
@@ -133,7 +148,9 @@ private fun GameInfo(
                 style = MaterialTheme.typography.titleLarge,
             )
             Spacer(modifier = Modifier.weight(1f))
-            Clock()
+            Clock(isRestart = isRestartClock) { min, sec, _ ->
+                onTimeUpdate("$min:$sec")
+            }
         }
         Spacer(modifier = Modifier.height(8.dp))
         Row(
@@ -283,15 +300,21 @@ private fun SettingsDialog(
 
 @Composable
 private fun FinalScoreDialog(
+    modifier: Modifier = Modifier,
     score: Int,
     onPlayAgain: () -> Unit,
     onExit: () -> Unit,
-    modifier: Modifier = Modifier
+    time: String = ""
 ) {
     AlertDialog(
         onDismissRequest = { },
-        title = { Text(text = "Final Score: $score") },
-        text = { Text(text = "Congratulations!") },
+        title = { Text(text = "Game Finished") },
+        text = {
+            Column {
+                Text(text = "Your score: $score")
+                Text(text = "Time: $time")
+            }
+        },
         modifier = modifier,
         dismissButton = {
             TextButton(
