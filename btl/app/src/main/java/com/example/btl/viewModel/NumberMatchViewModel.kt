@@ -11,7 +11,8 @@ data class NumberMatchState(
     val targetSum: Int = 0,
     val selected: Int? = null,
     val isFinished: Boolean = false,
-    val score: Int = 0
+    val score: Int = 0,
+    val correctCunt: Int = 0,
 )
 
 class NumberMatchViewModel : ViewModel() {
@@ -45,7 +46,12 @@ class NumberMatchViewModel : ViewModel() {
                 if (selectedNumber.number + currentSelected.number == currentState.targetSum) {
                     updateNumberState(selected)
                     updateNumberState(index)
-                    _state.update { it.copy(score = currentState.score + 10) }
+                    _state.update {
+                        it.copy(
+                            score = currentState.score + 10,
+                            correctCunt = currentState.correctCunt + 1
+                        )
+                    }
                 } else {
                     val newScore = (currentState.score - 5).coerceAtLeast(0)
                     _state.update { it.copy(score = newScore) }
@@ -87,7 +93,8 @@ class NumberMatchViewModel : ViewModel() {
                 targetSum = targetSum,
                 selected = null,
                 isFinished = false,
-                score = 0
+                score = 0,
+                correctCunt = 0
             )
         }
         generateNumbers(size, 1 until targetSum)

@@ -1,5 +1,7 @@
 package com.example.btl.ui.screen
 
+import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -11,7 +13,6 @@ import androidx.compose.material.icons.automirrored.filled.KeyboardArrowLeft
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Settings
 import androidx.compose.material3.AlertDialog
-import androidx.compose.material3.Card
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
@@ -27,10 +28,12 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
+import com.example.btl.ui.screen.Component.Clock
 import com.example.btl.ui.screen.Component.GridNumber
 import com.example.btl.ui.screen.Component.TopBar
 import com.example.btl.viewModel.ConnectSumViewModel
@@ -70,28 +73,14 @@ fun ConnectSumScreen(
                 .fillMaxSize()
                 .padding(it)
                 .padding(8.dp),
-            horizontalAlignment = Alignment.CenterHorizontally
+            verticalArrangement = Arrangement.Center
         ) {
-            Spacer(modifier = Modifier.height(16.dp))
-            Card {
-                Text(
-                    text = "Target sum: ${uiState.targetSum}",
-                    style = MaterialTheme.typography.titleLarge,
-                    modifier = Modifier.padding(8.dp)
-                )
-            }
-
-            Spacer(modifier = Modifier.height(16.dp))
-            Card {
-                Text(
-                    text = "Score: ${uiState.score}",
-                    style = MaterialTheme.typography.titleLarge,
-                    modifier = Modifier.padding(8.dp)
-                )
-            }
-
-            Spacer(modifier = Modifier.weight(1f))
-
+            GameInfo(
+                targetSum = uiState.targetSum,
+                score = uiState.score,
+                correct = uiState.correctCount
+            )
+            Spacer(modifier = Modifier.height(8.dp))
             GridNumber(
                 numbers = uiState.numbers,
                 selected = uiState.selected,
@@ -100,21 +89,62 @@ fun ConnectSumScreen(
             ) {
                 viewModel.selectNumber(it)
             }
-            Spacer(modifier = Modifier.weight(1f))
+        }
+        if (uiState.isFinished) {
+            FinalScoreDialog(
+                score = uiState.score,
+                onPlayAgain = {
+                    viewModel.reset(
+                        row = row,
+                        column = column,
+                        total = uiState.targetSum
+                    )
+                },
+                onExit = { onNavigateToMenuClick() }
+            )
+        }
+    }
+}
 
-            if (uiState.isFinished) {
-                FinalScoreDialog(
-                    score = uiState.score,
-                    onPlayAgain = {
-                        viewModel.reset(
-                            row = row,
-                            column = column,
-                            total = uiState.targetSum
-                        )
-                    },
-                    onExit = { onNavigateToMenuClick() }
-                )
-            }
+@Composable
+private fun GameInfo(
+    targetSum: Int,
+    score: Int,
+    correct: Int,
+    modifier: Modifier = Modifier
+) {
+    Column(
+        modifier = modifier
+            .background(
+                MaterialTheme.colorScheme.inversePrimary,
+                MaterialTheme.shapes.medium
+            )
+            .clip(MaterialTheme.shapes.medium)
+            .padding(16.dp)
+    ) {
+        Row(
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            Text(
+                text = "Target sum: $targetSum",
+                style = MaterialTheme.typography.titleLarge,
+            )
+            Spacer(modifier = Modifier.weight(1f))
+            Clock()
+        }
+        Spacer(modifier = Modifier.height(8.dp))
+        Row(
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            Text(
+                text = "Score: $score",
+                style = MaterialTheme.typography.titleLarge,
+            )
+            Spacer(modifier = Modifier.weight(1f))
+            Text(
+                text = "Correct: $correct",
+                style = MaterialTheme.typography.titleLarge,
+            )
         }
     }
 }

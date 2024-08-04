@@ -9,7 +9,8 @@ data class DualPlayerState(
     val second: Int?,
     val total: Int?,
     val isCorrect: Boolean?,
-    val correctCount: Int
+    val correctCount: Int,
+    val isFinished: Boolean = false
 )
 
 class DualPlayerViewModel : ViewModel() {
@@ -45,6 +46,19 @@ class DualPlayerViewModel : ViewModel() {
             total = total,
             isCorrect = null,
             correctCount = 0
+        )
+    }
+
+    fun finishGame() {
+        _uiState.value = _uiState.value.copy(isFinished = true)
+    }
+
+    fun newQuestion(total: Int? = null) {
+        _uiState.value = _uiState.value.copy(
+            first = null,
+            second = null,
+            total = total ?: (4..99).random(),
+            isCorrect = null
         )
     }
 

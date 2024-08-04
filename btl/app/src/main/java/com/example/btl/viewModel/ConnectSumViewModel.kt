@@ -19,7 +19,8 @@ data class ConnectSumState(
     val isFinished: Boolean = false,
     val score: Int = 0,
     val row: Int = 5,
-    val path: List<Node> = emptyList()
+    val path: List<Node> = emptyList(),
+    val correctCount: Int = 0,
 )
 
 class ConnectSumViewModel : ViewModel() {
@@ -69,7 +70,11 @@ class ConnectSumViewModel : ViewModel() {
                         updateNumberState(selected)
                         updateNumberState(index)
                         _state.update { state ->
-                            state.copy(score = state.score + 10, isFinished = isGameFinished())
+                            state.copy(
+                                score = state.score + 10,
+                                isFinished = isGameFinished(),
+                                correctCount = state.correctCount + 1
+                            )
                         }
                     }
                 } else {
@@ -138,7 +143,8 @@ class ConnectSumViewModel : ViewModel() {
                 selected = null,
                 isFinished = false,
                 score = 0,
-                path = emptyList()
+                path = emptyList(),
+                correctCount = 0
             )
         }
     }
