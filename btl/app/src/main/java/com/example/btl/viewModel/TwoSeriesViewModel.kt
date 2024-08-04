@@ -14,7 +14,8 @@ data class TwoSeriesState(
     val targetSum: Int = 0,
     val firstSelect: Int? = null,
     val secondSelect: Int? = null,
-    val isFinished: Boolean = false
+    val isFinished: Boolean = false,
+    val size: Int = SIZE
 )
 
 class TwoSeriesViewModel : ViewModel() {
@@ -112,7 +113,8 @@ class TwoSeriesViewModel : ViewModel() {
                 targetSum = targetSum,
                 firstSelect = null,
                 secondSelect = null,
-                isFinished = false
+                isFinished = false,
+                size = size
             )
         }
     }

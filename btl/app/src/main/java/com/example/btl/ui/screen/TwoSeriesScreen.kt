@@ -3,20 +3,33 @@ package com.example.btl.ui.screen
 import android.util.Log
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.filled.KeyboardArrowLeft
+import androidx.compose.material.icons.filled.Add
+import androidx.compose.material.icons.filled.Settings
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Card
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableIntStateOf
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
@@ -36,7 +49,15 @@ fun TwoSeriesScreen(
         topBar = {
             TopBar(
                 title = "Two Series",
-                onNavigateToMenuClick = onNavigateToMenuClick
+                onNavigateToMenuClick = onNavigateToMenuClick,
+                action = {
+                    SettingsButton(
+                        size = uiState.size,
+                        total = uiState.targetSum
+                    ) { size, total ->
+                        viewModel.reset(size, total)
+                    }
+                }
             )
         }
     ) {
@@ -82,6 +103,110 @@ fun TwoSeriesScreen(
             }
         }
     }
+}
+
+@Composable
+private fun SettingsButton(
+    size: Int = 6,
+    total: Int = 13,
+    apply: (Int, Int) -> Unit
+) {
+    var showDialog by remember { mutableStateOf(false) }
+    IconButton(
+        onClick = { showDialog = true },
+        modifier = Modifier
+            .padding(4.dp)
+    ) {
+        Icon(
+            imageVector = Icons.Filled.Settings,
+            contentDescription = "Menu",
+            tint = MaterialTheme.colorScheme.onPrimary
+        )
+    }
+
+    if (showDialog) {
+        SettingsDialog(
+            onDismiss = { showDialog = false },
+            size = size,
+            total = total,
+            apply = apply
+        )
+    }
+
+}
+
+@Composable
+private fun SettingsDialog(
+    onDismiss: () -> Unit,
+    modifier: Modifier = Modifier,
+    size: Int,
+    total: Int,
+    apply: (Int, Int) -> Unit
+) {
+    var tSize by remember { mutableIntStateOf(size) }
+    var tTotal by remember { mutableIntStateOf(total) }
+    AlertDialog(
+        onDismissRequest = { onDismiss() },
+        title = { Text(text = "Settings") },
+        text = {
+            Column {
+                Row(
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    Text(text = "Number of Series: ")
+                    Spacer(modifier = Modifier.weight(1f))
+                    IconButton(onClick = { if (tSize > 6) tSize-- }) {
+                        Icon(
+                            imageVector = Icons.AutoMirrored.Filled.KeyboardArrowLeft,
+                            contentDescription = "Decrease row"
+                        )
+                    }
+                    Text(
+                        text = tSize.toString(),
+                        modifier = Modifier.padding(horizontal = 16.dp)
+                    )
+                    IconButton(onClick = { if (tSize < 20) tSize++ }) {
+                        Icon(imageVector = Icons.Default.Add, contentDescription = "Increase")
+                    }
+                }
+                Spacer(modifier = Modifier.height(8.dp))
+
+                Row(
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    Text(text = "Total: ")
+                    Spacer(modifier = Modifier.weight(1f))
+                    IconButton(onClick = { if (tTotal > 8) tTotal-- }) {
+                        Icon(
+                            imageVector = Icons.AutoMirrored.Filled.KeyboardArrowLeft,
+                            contentDescription = "Decrease total"
+                        )
+                    }
+                    Text(
+                        text = tTotal.toString(),
+                        modifier = Modifier.padding(horizontal = 16.dp)
+                    )
+                    IconButton(onClick = { if (tTotal < 18) tTotal++ }) {
+                        Icon(imageVector = Icons.Default.Add, contentDescription = "Increase")
+                    }
+                }
+            }
+        },
+        confirmButton = {
+            TextButton(onClick = {
+                apply(tSize, tTotal)
+                onDismiss()
+            }) {
+                Text(text = "Save")
+            }
+        },
+        dismissButton = {
+            TextButton(onClick = onDismiss) {
+                Text(text = "Cancel")
+            }
+        },
+        modifier = modifier
+    )
 }
 
 
