@@ -30,12 +30,7 @@ fun TwoSeriesScreen(
     onNavigateToMenuClick: () -> Unit = {},
     viewModel: TwoSeriesViewModel = viewModel()
 ) {
-    val firstNumbers by viewModel.firstNumbers.collectAsState()
-    val secondNumbers by viewModel.secondNumbers.collectAsState()
-    val targetSum by viewModel.targetSum.collectAsState()
-    val firstSelect by viewModel.firstSelect.collectAsState()
-    val secondSelect by viewModel.secondSelect.collectAsState()
-    val isFinished by viewModel.isFinished.collectAsState()
+    val uiState by viewModel.state.collectAsState()
 
     Scaffold(
         topBar = {
@@ -45,7 +40,7 @@ fun TwoSeriesScreen(
             )
         }
     ) {
-        if (isFinished) {
+        if (uiState.isFinished) {
             FinalScoreDialog(
                 onPlayAgain = { viewModel.reset(size = 12, total = 14) },
                 onExit = onNavigateToMenuClick
@@ -61,26 +56,26 @@ fun TwoSeriesScreen(
             ) {
                 Spacer(modifier = Modifier.weight(1f))
 
-                LineNumber(numbers = firstNumbers, selected = firstSelect) {
+                LineNumber(numbers = uiState.firstNumbers, selected = uiState.firstSelect) {
                     viewModel.selectFirstNumber(it)
-                    Log.d("TwoSeriesViewModel", "selectFirstNumber: ${firstNumbers[it]}")
+                    Log.d("TwoSeriesViewModel", "selectFirstNumber: ${uiState.firstNumbers[it]}")
                 }
                 Spacer(modifier = Modifier.height(16.dp))
-                Text(text = "Select: ${if (firstSelect != null) firstNumbers[firstSelect!!].number else "None"}")
+                Text(text = "Select: ${if (uiState.firstSelect != null) uiState.firstNumbers[uiState.firstSelect!!].number else "None"}")
 
                 Spacer(modifier = Modifier.weight(2f))
                 Card {
                     Text(
-                        text = "Total Requirement $targetSum",
+                        text = "Total Requirement ${uiState.targetSum}",
                         modifier = Modifier.padding(16.dp)
                     )
                 }
 
                 Spacer(modifier = Modifier.weight(2f))
-                Text(text = "Select: ${if (secondSelect != null) secondNumbers[secondSelect!!].number else "None"}")
+                Text(text = "Select: ${if (uiState.secondSelect != null) uiState.secondNumbers[uiState.secondSelect!!].number else "None"}")
 
                 Spacer(modifier = Modifier.height(16.dp))
-                LineNumber(numbers = secondNumbers, selected = secondSelect) {
+                LineNumber(numbers = uiState.secondNumbers, selected = uiState.secondSelect) {
                     viewModel.selectSecondNumber(it)
                 }
                 Spacer(modifier = Modifier.weight(1f))

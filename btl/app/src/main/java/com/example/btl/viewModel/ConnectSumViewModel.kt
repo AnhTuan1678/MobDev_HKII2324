@@ -1,5 +1,6 @@
 package com.example.btl.viewModel
 
+import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.btl.algorithms.Node
@@ -11,6 +12,15 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 
+data class ConnectSumState(
+    val numbers: List<NumberState> = emptyList(),
+    val targetSum: Int = 0,
+    val selected: Int? = null,
+    val isFinished: Boolean = false,
+    val score: Int = 0,
+    val row: Int = 5,
+    val path: List<Node> = emptyList()
+)
 class ConnectSumViewModel : ViewModel() {
     // StateFlow để lưu trữ danh sách số
     private val _numbers = MutableStateFlow<List<NumberState>>(emptyList())
@@ -128,6 +138,7 @@ class ConnectSumViewModel : ViewModel() {
 //                    Kiểm tra Match
                     val ans: Pair<List<Node>, Int>? = match(number1, number2)
                     if (ans != null) {
+                        Log.d("BTL_MOB_DEV", "Match: $number1 and $number2")
                         return false
                     }
                 }
@@ -140,6 +151,7 @@ class ConnectSumViewModel : ViewModel() {
         _targetSum.value = total ?: (10..20).random()
         generateNumbers(row, column, 1..<_targetSum.value)
         _selected.value = null
-        _isFinished.value = false
+        _isFinished.value = isGameFinished()
+        _score.value = 0
     }
 }

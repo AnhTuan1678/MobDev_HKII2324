@@ -42,11 +42,7 @@ fun NumberMatchScreen(
     viewModel: NumberMatchViewModel = viewModel(),
 //    scaffoldState:
 ) {
-    val numbers by viewModel.numbers.collectAsState()
-    val selected by viewModel.selected.collectAsState(null)
-    val total by viewModel.targetSum.collectAsState(0)
-    val isFinished by viewModel.isFinished.collectAsState(false)
-    val score by viewModel.score.collectAsState(0)
+    val uiState by viewModel.state.collectAsState()
 
     var row by remember { mutableIntStateOf(5) } // Số hàng
     var column by remember { mutableIntStateOf(5) } // Số cột
@@ -57,7 +53,7 @@ fun NumberMatchScreen(
                 title = "Number Match",
                 onNavigateToMenuClick = onNavigateToMenuClick,
                 action = {
-                    SettingsButton(row = row, column = column, total = total) { r, c, t ->
+                    SettingsButton(row = row, column = column, total = uiState.targetSum) { r, c, t ->
                         row = r
                         column = c
                         viewModel.reset(size = r * c, total = t)
@@ -76,7 +72,7 @@ fun NumberMatchScreen(
             Spacer(modifier = Modifier.height(16.dp))
             Card {
                 Text(
-                    text = "Target sum: $total",
+                    text = "Target sum: ${uiState.targetSum}",
                     style = MaterialTheme.typography.titleLarge,
                     modifier = Modifier.padding(8.dp)
                 )
@@ -85,7 +81,7 @@ fun NumberMatchScreen(
             Spacer(modifier = Modifier.height(16.dp))
             Card {
                 Text(
-                    text = "Score: $score",
+                    text = "Score: ${uiState.score}",
                     style = MaterialTheme.typography.titleLarge,
                     modifier = Modifier.padding(8.dp)
                 )
@@ -94,18 +90,18 @@ fun NumberMatchScreen(
             Spacer(modifier = Modifier.weight(1f))
 
             GridNumber(
-                numbers = numbers,
-                selected = selected,
+                numbers = uiState.numbers,
+                selected = uiState.selected,
                 column = column
             ) { it ->
                 viewModel.selectNumber(it)
             }
             Spacer(modifier = Modifier.weight(1f))
 
-            if (isFinished) {
+            if (uiState.isFinished) {
                 FinalScoreDialog(
-                    score = score,
-                    onPlayAgain = { viewModel.reset(size = row * column, total = total) },
+                    score = uiState.score,
+                    onPlayAgain = { viewModel.reset(size = row * column, total = uiState.targetSum) },
                     onExit = { onNavigateToMenuClick() }
                 )
             }

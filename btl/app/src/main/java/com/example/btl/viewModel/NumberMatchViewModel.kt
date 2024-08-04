@@ -6,24 +6,17 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.update
 
+data class NumberMatchState(
+    val numbers: List<NumberState> = emptyList(),
+    val targetSum: Int = 0,
+    val selected: Int? = null,
+    val isFinished: Boolean = false,
+    val score: Int = 0
+)
+
 class NumberMatchViewModel : ViewModel() {
-    // StateFlow để lưu trữ danh sách số
-    private val _numbers = MutableStateFlow<List<NumberState>>(emptyList())
-    val numbers: StateFlow<List<NumberState>> get() = _numbers
-
-    // StateFlow để lưu trữ tổng mục tiêu
-    private val _targetSum = MutableStateFlow<Int>(0)
-    val targetSum: StateFlow<Int> get() = _targetSum
-
-    // StateFlow để lưu trữ số được chọn
-    private val _selected = MutableStateFlow<Int?>(null)
-    val selected: StateFlow<Int?> get() = _selected
-
-    private val _isFinished = MutableStateFlow<Boolean>(false)
-    val isFinished: StateFlow<Boolean> get() = _isFinished
-
-    private val _score = MutableStateFlow<Int>(0)
-    val score: StateFlow<Int> get() = _score
+    private val _state = MutableStateFlow(NumberMatchState())
+    val state: StateFlow<NumberMatchState> get() = _state
 
     init {
         reset(25, (5..13).random())
@@ -34,54 +27,52 @@ class NumberMatchViewModel : ViewModel() {
         val numberStates = numbers.mapIndexed { index, number ->
             NumberState(number = number, isMatched = false, index = index)
         }
-        _numbers.value = numberStates
+        _state.update { it.copy(numbers = numberStates) }
     }
 
     fun selectNumber(index: Int) {
-        val currentSelected = _numbers.value.getOrNull(index) ?: return
-        val selected = _selected.value
+        val currentState = _state.value
+        val currentSelected = currentState.numbers.getOrNull(index) ?: return
+
         if (currentSelected.isMatched) return
 
+        val selected = currentState.selected
         if (selected == null) {
-            _selected.value = index
+            _state.update { it.copy(selected = index) }
         } else {
-            val selectedNumber = _numbers.value.getOrNull(selected) ?: return
+            val selectedNumber = currentState.numbers.getOrNull(selected) ?: return
             if (selectedNumber.index != currentSelected.index) {
-                if (selectedNumber.number + currentSelected.number == _targetSum.value) {
+                if (selectedNumber.number + currentSelected.number == currentState.targetSum) {
                     updateNumberState(selected)
                     updateNumberState(index)
-                    _score.value += 10
+                    _state.update { it.copy(score = currentState.score + 10) }
                 } else {
-                    _score.value -= 5
-                    _score.value = if (_score.value < 0) 0 else _score.value
+                    val newScore = (currentState.score - 5).coerceAtLeast(0)
+                    _state.update { it.copy(score = newScore) }
                 }
             }
-            _selected.value = null
+            _state.update { it.copy(selected = null) }
         }
-        _isFinished.value = isGameFinished()
+        _state.update { it.copy(isFinished = isGameFinished()) }
     }
 
     private fun updateNumberState(index: Int, isMatched: Boolean = true) {
-        val currentNumbers = _numbers.value
-        if (index < 0 || index >= currentNumbers.size) return
-
-        val currentNumber = currentNumbers[index]
-        val updatedNumber = currentNumber.copy(isMatched = isMatched)
-        _numbers.update { numbers ->
-            numbers.toMutableList().apply { this[index] = updatedNumber }
+        _state.update { state ->
+            val updatedNumbers = state.numbers.toMutableList().apply {
+                this[index] = this[index].copy(isMatched = isMatched)
+            }
+            state.copy(numbers = updatedNumbers)
         }
     }
 
     private fun isGameFinished(): Boolean {
-        val currentNumbers = _numbers.value
-        val targetSum = _targetSum.value
-
-        val availableNumbers = currentNumbers.filterNot { it.isMatched }
+        val currentState = _state.value
+        val availableNumbers = currentState.numbers.filterNot { it.isMatched }
         if (availableNumbers.size < 2) return true
 
         for (i in availableNumbers.indices) {
             for (j in i + 1 until availableNumbers.size) {
-                if (availableNumbers[i].number + availableNumbers[j].number == targetSum) {
+                if (availableNumbers[i].number + availableNumbers[j].number == currentState.targetSum) {
                     return false
                 }
             }
@@ -90,9 +81,15 @@ class NumberMatchViewModel : ViewModel() {
     }
 
     fun reset(size: Int, total: Int?) {
-        _targetSum.value = total ?: (10..20).random()
-        generateNumbers(size, 1..<_targetSum.value)
-        _selected.value = null
-        _isFinished.value = false
+        val targetSum = total ?: (10..20).random()
+        _state.update {
+            it.copy(
+                targetSum = targetSum,
+                selected = null,
+                isFinished = false,
+                score = 0
+            )
+        }
+        generateNumbers(size, 1 until targetSum)
     }
 }
