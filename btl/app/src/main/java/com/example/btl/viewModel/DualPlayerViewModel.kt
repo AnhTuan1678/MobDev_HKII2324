@@ -8,7 +8,8 @@ data class DualRowsState(
     val first: Int?,
     val second: Int?,
     val total: Int?,
-    val isCorrect: Boolean?
+    val isCorrect: Boolean?,
+    val correctCount: Int
 )
 
 class DualPlayerViewModel : ViewModel() {
@@ -17,7 +18,8 @@ class DualPlayerViewModel : ViewModel() {
             first = null,
             second = null,
             total = null,
-            isCorrect = null
+            isCorrect = null,
+            correctCount = 0
         )
     )
     val uiState: StateFlow<DualRowsState> get() = _uiState
@@ -31,7 +33,8 @@ class DualPlayerViewModel : ViewModel() {
             first = first,
             second = second,
             total = total,
-            isCorrect = isCorrect
+            isCorrect = isCorrect,
+            correctCount = _uiState.value.correctCount + if (isCorrect == true) 1 else 0
         )
     }
 
@@ -40,7 +43,8 @@ class DualPlayerViewModel : ViewModel() {
             first = null,
             second = null,
             total = total,
-            isCorrect = null
+            isCorrect = null,
+            correctCount = 0
         )
     }
 

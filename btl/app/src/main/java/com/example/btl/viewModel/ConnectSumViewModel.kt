@@ -69,20 +69,23 @@ class ConnectSumViewModel : ViewModel() {
             _selected.value = index
         } else {
             val selectedNumber = _numbers.value.getOrNull(selected) ?: return
-            if (
-                selectedNumber.index != currentSelected.index
-                && selectedNumber.number + currentSelected.number == _targetSum.value
-            ) {
+            if (selectedNumber.index != currentSelected.index) {
                 val ans: Pair<List<Node>, Int>? = match(selectedNumber, currentSelected)
-                if (ans != null) {
+                if (ans != null
+                    && selectedNumber.number + currentSelected.number == _targetSum.value
+                ) {
                     viewModelScope.launch {
                         _path.value = ans.first
                         delay(1000)
                         _path.value = emptyList()
                         updateNumberState(selected)
                         updateNumberState(index)
+                        _score.value += 10
                         _isFinished.value = isGameFinished()
                     }
+                } else{
+                    _score.value -= 5
+                    _score.value = if (_score.value < 0) 0 else _score.value
                 }
             }
             _selected.value = null

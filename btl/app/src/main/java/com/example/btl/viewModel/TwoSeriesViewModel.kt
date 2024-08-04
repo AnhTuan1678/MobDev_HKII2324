@@ -8,6 +8,14 @@ import kotlinx.coroutines.flow.update
 
 private const val SIZE = 12
 
+data class TwoSeriesState(
+    val firstNumbers: List<NumberState>,
+    val secondNumbers: List<NumberState>,
+    val targetSum: Int,
+    val firstSelect: Int?,
+    val secondSelect: Int?,
+    val isFinished: Boolean
+)
 class TwoSeriesViewModel : ViewModel() {
     private val _firstNumbers = MutableStateFlow<List<NumberState>>(emptyList())
     val firstNumbers: StateFlow<List<NumberState>> get() = _firstNumbers

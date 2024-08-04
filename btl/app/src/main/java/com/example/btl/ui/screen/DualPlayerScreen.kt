@@ -76,6 +76,10 @@ fun DualPlayerScreen(
                     style = MaterialTheme.typography.titleLarge
                 )
             }
+            Text(
+                text = "Correct count: ${state.correctCount}",
+                style = MaterialTheme.typography.bodyMedium
+            )
 
             Spacer(modifier = Modifier.weight(1f))
 
