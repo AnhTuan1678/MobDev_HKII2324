@@ -131,7 +131,7 @@ fun DualPlayerScreen(
                 Result(
                     isCorrect = state.isCorrect!!,
                     onRestart = {
-                        viewModel.resetDualRowsState((10..100).random())
+                        viewModel.reset((10..100).random())
                     }
                 )
             }

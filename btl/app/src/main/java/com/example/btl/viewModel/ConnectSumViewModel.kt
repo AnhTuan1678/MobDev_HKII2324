@@ -37,9 +37,7 @@ class ConnectSumViewModel : ViewModel() {
     val path: StateFlow<List<Node>> get() = _path
 
     init {
-        generateNumbers(5, 5, 1..4)
-        _targetSum.value = (5..6).random() // Ví dụ tổng mục tiêu giữa 5 và 13
-        _isFinished.value = false
+        reset(5, 5, null)
     }
 
     private fun generateNumbers(row: Int, column: Int, range: IntRange = 1..5) {
@@ -136,8 +134,8 @@ class ConnectSumViewModel : ViewModel() {
     }
 
     fun reset(row: Int, column: Int, total: Int?) {
-        generateNumbers(row, column, 1..4)
         _targetSum.value = total ?: (10..20).random()
+        generateNumbers(row, column, 1..<_targetSum.value)
         _selected.value = null
         _isFinished.value = false
     }

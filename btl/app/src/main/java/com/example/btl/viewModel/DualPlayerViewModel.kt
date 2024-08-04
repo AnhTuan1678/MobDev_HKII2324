@@ -23,7 +23,7 @@ class DualPlayerViewModel : ViewModel() {
     val uiState: StateFlow<DualRowsState> get() = _uiState
 
     init {
-        resetDualRowsState((1..100).random())
+        reset((1..100).random())
     }
 
     fun updateDualRowsState(first: Int?, second: Int?, total: Int?, isCorrect: Boolean?) {
@@ -35,7 +35,7 @@ class DualPlayerViewModel : ViewModel() {
         )
     }
 
-    fun resetDualRowsState(total: Int? = 20) {
+    fun reset(total: Int? = 20) {
         _uiState.value = DualRowsState(
             first = null,
             second = null,

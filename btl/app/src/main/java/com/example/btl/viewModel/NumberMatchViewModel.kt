@@ -26,9 +26,7 @@ class NumberMatchViewModel : ViewModel() {
     val score: StateFlow<Int> get() = _score
 
     init {
-        generateNumbers(25)
-        _targetSum.value = (5..13).random() // Ví dụ tổng mục tiêu giữa 5 và 13
-        _isFinished.value = false
+        reset(25, (5..13).random())
     }
 
     private fun generateNumbers(size: Int = 25, range: IntRange = 1..10) {
@@ -92,8 +90,8 @@ class NumberMatchViewModel : ViewModel() {
     }
 
     fun reset(size: Int, total: Int?) {
-        generateNumbers(size)
         _targetSum.value = total ?: (10..20).random()
+        generateNumbers(size, 1..<_targetSum.value)
         _selected.value = null
         _isFinished.value = false
     }
