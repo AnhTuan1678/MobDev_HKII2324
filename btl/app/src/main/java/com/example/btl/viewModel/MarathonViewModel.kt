@@ -13,7 +13,7 @@ data class Question(
 
 data class MarathonState(
     val questions: List<Question> = emptyList(),
-    val size: Int = 10,
+    val size: Int = 100,
     val currentQuestionIndex: Int = 0,
     val isFinished: Boolean = false,
     val score: Int = 0,
@@ -72,8 +72,7 @@ class MarathonViewModel : ViewModel() {
             option.shuffled()
             Question(addend1, addend2, sum, answer, option)
         }
-        _state.value = _state.value.copy(questions = questions)
-
+        _state.value = _state.value.copy(questions = questions, size = size)
     }
 
     fun checkAnswer(answer: Int): Boolean {
